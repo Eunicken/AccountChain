@@ -2,15 +2,19 @@
 
 Welcome to *AccountChain©*!
 
-*AccountChain©* is a blockchain-based customer loyalty platform where transactions of non-monetized loyalty points are securely processed and immutably recorded in a permissioned ledger environment. The result is a **decentral**, **fully transparent**, and **fraud-protected** real-time accounting system. Moreover, it includes a cryptographically secured redemption process of loyalty points, mitigating risks of counterfeited occurrence of financial liabilities. AccountChain© is based on Hyperledger Fabric BC and operates in a private permissioned ledger environment. 
+*AccountChain©* is a blockchain-based customer loyalty platform where transactions of non-monetized loyalty points are securely processed and immutably recorded in a permissioned ledger environment. The result is a **decentral**, **fully transparent**, and **fraud-protected** real-time accounting system. Moreover, it includes a cryptographically secured redemption process of loyalty points, mitigating risks of counterfeited occurrence of financial liabilities. AccountChain© is based on Hyperledger Fabric Blockchain and operates in a private permissioned ledger environment. 
 
 <img width="1039" alt="rename_screenshot" src="images/3D-mockup.jpg">
 
 ## Project Description
 
-Based on the RFS of TopPharm, the main task of this project was to examine the question whether and to what extent BC technology can help to improve customer loyalty programs with regard to real-time data integrity, transparency, and security. In this respect, we have evaluated whether BC technology in fact delivers a value added compared to a traditional database. The result of our assessment clearly underlines that there are significant advantages for all previously mentioned criteria. We have therefore conceptualized AccountChain© which is a decentral, fully transparent and fraud-protected loyalty platform, embedded in a permissioned ledger HLF BC environment. It ensures data security through cryptographically signed transaction
+Based on the Request for Solution of TopPharm, the main task of this project was to examine the question whether and to what extent blockchain technology can help to improve customer loyalty programs with regard to real-time data integrity, transparency, and security. 
 
-This repository contains three important files: The HTML code for your first website on GitHub, the CSS stylesheet that decorates your website with colors and fonts, and the **README** file. It also contains an image folder, with one image file.
+This repository contains one important file and two important links: The solidity code for your first website on GitHub, the CSS stylesheet that decorates your website with colors and fonts, and the **README** file. It also contains an image folder, with one image file.
+
+## Chaincode Description
+
+Chaincode is the SC in Hyperledger, which plays a central role in the AccountChain© application. It documents transactions, manages promotions, calculates tax and current accounts, and cryptographically verifies the actual existence and validity of vouchers during the redemption process. The main functions contained in our Chaincode are explained in the following.
 
 ## Describe your project
 
