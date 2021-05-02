@@ -14,7 +14,7 @@ Based on the Request for Solution of TopPharm, the main task of this project was
 
 This technical documentation contains one important file and two important links: 
 - The Smart Contract code for **AccountChain.sol** written in solidity 
-- The Client User Interface [AccountChain App](tiny.cc/AccountChainApp)
+- The Client User Interface [AccountChain App](https://xd.adobe.com/view/b63ae9ae-8d0c-4d6c-b447-ee5eade2a5d9-e369/?fullscreen&hints=off)
 - The Pharmacy User Interface [AccountChain WebApp](tiny.cc/AccountChainWeb)
 
 ## Chaincode Description
