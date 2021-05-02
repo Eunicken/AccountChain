@@ -6,9 +6,9 @@ Welcome to *AccountChain©*!
 
 <img width="1039" alt="rename_screenshot" src="images/3D-mockup.jpg">
 
-## Repositories
+## Project Description
 
-Right now, we’re in your first GitHub **repository**. A repository is like a folder or storage space for your project. Your project's repository contains all its files such as code, documentation, images, and more. It also tracks every change that you—or your collaborators—make to each file, so you can always go back to previous versions of your project if you make any mistakes.
+Based on the RFS of TopPharm, the main task of this project was to examine the question whether and to what extent BC technology can help to improve customer loyalty programs with regard to real-time data integrity, transparency, and security. In this respect, we have evaluated whether BC technology in fact delivers a value added compared to a traditional database. The result of our assessment clearly underlines that there are significant advantages for all previously mentioned criteria. We have therefore conceptualized AccountChain© which is a decentral, fully transparent and fraud-protected loyalty platform, embedded in a permissioned ledger HLF BC environment. It ensures data security through cryptographically signed transaction
 
 This repository contains three important files: The HTML code for your first website on GitHub, the CSS stylesheet that decorates your website with colors and fonts, and the **README** file. It also contains an image folder, with one image file.
 
