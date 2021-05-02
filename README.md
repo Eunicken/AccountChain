@@ -2,7 +2,7 @@
 
 Welcome to GitHub—where millions of developers work together on software. Ready to get started? Let’s learn how this all works by building and publishing your first GitHub Pages website!
 
-<img width="1039" alt="rename_screenshot" src="https://user-images.githubusercontent.com/18093541/63129466-956cc580-bf85-11e9-92d8-b028dd483fa5.png">
+<img width="1039" alt="rename_screenshot" src="images/3D-mockup.jpg">
 
 ## Repositories
 
