@@ -19,7 +19,7 @@ This technical documentation contains one important file and two important links
 
 ## Chaincode Description
 
-Chaincode is the SC in Hyperledger, which plays a central role in the AccountChain© application. It documents transactions, manages promotions, calculates tax and current accounts, and cryptographically verifies the actual existence and validity of vouchers during the redemption process. The main functions contained in our Chaincode are explained in the following.
+Chaincode is the Smart Contract in Hyperledger, which plays a central role in the *AccountChain©* application. It documents transactions, manages promotions, calculates tax and current accounts, and cryptographically verifies the actual existence and validity of vouchers during the redemption process. The main functions contained in our Chaincode are explained in the following.
 
 ## Describe your project
 
