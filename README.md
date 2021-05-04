@@ -59,7 +59,7 @@ Chaincode is the Smart Contract in Hyperledger, which plays a central role in th
 Everything starts with a purchase in one of the branches in the loyalty network. This function documents transactions on the blockchain, therefore denoting the first step in a loyalty point’s journey. 
 
 The information contained in a transaction is the client ID, the respective pharmacy ID, a list of purchased products and a unique transaction ID. 
-```
+```solidity
     struct transaction {
         uint pharmacyID;
         uint clientID;
