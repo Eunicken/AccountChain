@@ -2,7 +2,7 @@ Welcome to AccountChain
 =============================
 
 
-- [Introduction](#-Introduction)
+- [Introduction](#Introduction)
 - [Titles](#titles)
 - [Paragraph](#paragraph)
 - [List](#list)
