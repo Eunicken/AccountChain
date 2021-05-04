@@ -7,11 +7,14 @@ Welcome to AccountChain
 - [Technical Documentation](#Technical-Documentation)
 - [Chaincode Functions](#Chaincode-Functions)
 	- [addTransaction](#addTransaction)
+	- [addPointRecord](#addPointRecord)
 	- [calcPoint](#calcPoint)
 	- [calcPointValue](#calcPointValue)
-	- [addPointRecord](#addPointRecord)
+	- [](#)
 	- [addPromotion](#addPromotion)
 	- [bookAccrualAccount](#bookAccrualAccount)
+	- [queryPromotionMultiple](#queryPromotionMultiple)
+	- [queryPromotionPointValue](#queryPromotionPointValue)
 - [Link](#link)
 	- [Anchor links](#anchor-links)
 - [Blockquote](#blockquote)
@@ -63,7 +66,7 @@ Everything starts with a purchase in one of the branches in the loyalty network.
 
 The information contained in a transaction is the client ID, the respective pharmacy ID, a list of purchased products and a unique transaction ID. 
 ```solidity
-    struct transaction {
+   struct transaction {
         uint pharmacyID;
         uint clientID;
         mapping (uint => product) productSold;
@@ -76,9 +79,10 @@ All transactions are stored in a mapping <transactionList> using the unique tran
 ```solidity
 mapping (uint => transaction) transactionList;
 ```   
-addTransaction further calls the [calcPoint](#calcPoint) and [calcPointValue](#calcPointValue) functions to calculate the points and point values related to the transaction and to store this information as part of a transaction in transactionList. The attribute PointValue is introduced to record the value of points from the issuing pharmacy’s point of view. Let’s elaborate briefly on this. If points issued are not combined with any promotion, a point has a (default) value of CHF 0.01. On the other side, let’s assume that there exists a x20 multi-point promotion. In this case, from a pharmacy’s point of view, one point has a value equal to CHF 0.0005 since the promotion is paid by the producer, not by pharmacies. In other words, the fraction of additional points issued here (19/20) must be charged to third parties. For the pharmacy itself, the points issued in this transaction therefore only have a value (to be paid) of CHF 0.01/20 = CHF 0.0005. Additionally, data related to multi-point promotions is stored in promotionList. The promotions can be added through [addPromotion](#addPromotion) function. After calculating the number of points and their respective point value, the addTransaction function updates the PointRecordList by calling [addPointRecord](#addPointRecord) function and therefore the client’s point account. After checking the point validity through [expirePoint](#expirePoint) function, an event will be triggered to create a clean voucher code in an off-chain application as soon as a client has reached a point balance of 500.     
+addTransaction further calls the [calcPoint](#calcPoint) and [calcPointValue](#calcPointValue) functions to calculate the points and point values related to the transaction and to store this information as part of a transaction in transactionList. The attribute PointValue is introduced to record the value of points from the issuing pharmacy’s point of view. Let’s elaborate briefly on this. If points issued are not combined with any promotion, a point has a (default) value of CHF 0.01. On the other side, let’s assume that there exists a x20 multi-point promotion. In this case, from a pharmacy’s point of view, one point has a value equal to CHF 0.0005 since the promotion is paid by the producer, not by pharmacies. In other words, the fraction of additional points issued here (19/20) must be charged to third parties. For the pharmacy itself, the points issued in this transaction therefore only have a value (to be paid) of CHF 0.01/20 = CHF 0.0005. Additionally, data related to multi-point promotions is stored in promotionList. The promotions can be added through [addPromotion](#addPromotion) function. After calculating the number of points and their respective point value, the addTransaction function updates the PointRecordList by calling [addPointRecord](#addPointRecord) function and therefore the client’s point account. After checking the point validity through [expirePoint](#expirePoint) function, an event will be triggered to create a clean voucher code in an off-chain application as soon as a client has reached a point balance of 500.  
+	
 ```solidity
-    function addTransaction(uint _clientID, uint _pharmacyID, product[] memory _product, uint transactionID) public {
+   function addTransaction(uint _clientID, uint _pharmacyID, product[] memory _product, uint transactionID) public {
         uint _point;
         uint _pointValue;
         lengthTransactionList++;
@@ -102,15 +106,10 @@ addTransaction further calls the [calcPoint](#calcPoint) and [calcPointValue](#c
         }
     }
 ```
-
-### calcPoint
-
-### calcPointValue
-
 ### addPointRecord
 The addPointRecord function is triggered by [addTransaction](#addTransaction) to record points in PointRecordList. Each point has attributes such as the client ID, pharmacy ID, point value, point issue timestamp, tax category of the respective purchased products and a status. 
 ```solidity
-        struct pointRecord {
+   struct pointRecord {
         uint pharmacyID;
         uint clientID;
         uint point;
@@ -123,11 +122,11 @@ The addPointRecord function is triggered by [addTransaction](#addTransaction) to
     }
 ```
 ```solidity
-        pointRecord[] pointRecordList;
+   pointRecord[] pointRecordList;
 ```
 A point can exhibit three different states – “Active”; “Converted into voucher” and “Expired”, whereby the status is set to “Active” at issuance.  After the points have been recorded, the addPointRecord function triggers the [bookAccrualAccount](#bookAccrualAccount) function to book the total value of points issued in the pharmacy’s point accrual account. This accrued balance denotes a sell discount, which is VAT-deductible. 
 ```solidity
-    function addPointRecord(uint _clientID, uint _pharmacyID, uint _point, uint _pointValue,  product memory  _product) internal {
+   function addPointRecord(uint _clientID, uint _pharmacyID, uint _point, uint _pointValue,  product memory  _product) internal {
             pointRecordList[pointRecordList.length].clientID = _clientID;
             pointRecordList[pointRecordList.length].pharmacyID = _pharmacyID;
             pointRecordList[pointRecordList.length].point = _point;
@@ -138,12 +137,65 @@ A point can exhibit three different states – “Active”; “Converted into v
             bookAccrualAccount(_pharmacyID, int(_pointValue), taxCategoryList[_product.productID]);
     }
 ```
+### calcPoint
+The calcPoint function is called by [addTransaction](#addTransaction) to calculate the total points that a client can obtain for one purchase. This function calls [queryPromotionMultiple](#queryPromotionMultiple) to calculate up-to-date promotion applied.
+```solidity
+   function calcPoint(product memory _product) internal returns(uint _point){
+        uint _point = 0;
+        uint promotionMultiple = 1; // set the initial value for promotion equal to 1
+        promotionMultiple = queryPromotionMultiple(_product.productID);
+        _point = _point + _product.unitPrice*_product.quantity*promotionMultiple;
+        return _point;
+    }
+``` 
+### calcPointValue
+The calcPointValue function is called by [addTransaction](#addTransaction) to calculate the point value that a pharmacy has to book in their point accrual account for one purchase. This function calls [queryPromotionMultiple](#queryPromotionMultiple) to calculate up-to-date promotion applied and calls [queryPromotionPointValue](#queryPromotionPointValue) to calculate the value for each issued point. Ordinarily, the pointValue equals to 1/Promotion_Multiple. However, the producers can set the pointValue smaller than 1/Promotion_Multiple to encourage the pharmacies to sell more their products.
+```solidity
+    function calcPointValue(product memory _product) internal returns(uint _pointValue){
+        uint _point = 0;
+        uint _pointValue = 100; //Default value in percent, equal to 100 means that one point has value of 0.01 CHF
+        uint promotionMultiple = 1; // set the initial value for promotion equal to 1
+        promotionMultiple = queryPromotionMultiple(_product.productID);
+        _pointValue = queryPromotionPointValue(_product.productID);
+        _point = _point + _product.unitPrice*_product.quantity*promotionMultiple*_pointValue/100;
+        return _point;
+    }
+```
+
 ### addPromotion
 
 ### expirePoint
 
 ### bookAccrualAccount
 
+### queryPromotionMultiple
+This function is called by [calcPoint](#calcPoint) and [calcPointValue](#calcPointValue) functions to calculate the up-to-date promotions.
+```solidity
+    function queryPromotionMultiple(uint productID) internal returns(uint){
+        uint _multiple = 1;
+            for (uint i = 0; i < promotionList.length; i++) {
+            if (promotionList[i].productID == productID && promotionList[i].beginTime <= block.timestamp && promotionList[i].endTime >= block.timestamp) {
+                    _multiple = promotionList[i].multiple;
+                    break;
+                }
+            }
+        return _multiple;
+    }
+```
+### queryPromotionPointValue
+This function is called by [calcPointValue](#calcPointValue) functions to calculate the up-to-date point value applied to a promotion.
+```solidity
+    function queryPromotionPointValue(uint productID) internal returns(uint){
+        uint _pointValue = 1;
+            for (uint i = 0; i < promotionList.length; i++) {
+            if (promotionList[i].productID == productID && promotionList[i].beginTime <= block.timestamp && promotionList[i].endTime >= block.timestamp) {
+                    _pointValue = promotionList[i].pointValue;
+                    break;
+                }
+            }
+        return _pointValue;
+    }
+```
 **GitHub Pages** is a free and easy way to create a website using the code that lives in your GitHub repositories. You can use GitHub Pages to build a portfolio of your work, create a personal website, or share a fun project that you coded with the world. GitHub Pages is automatically enabled in this repository, but when you create new repositories in the future, the steps to launch a GitHub Pages website will be slightly different.
 
 [Learn more about GitHub Pages](https://pages.github.com/)
