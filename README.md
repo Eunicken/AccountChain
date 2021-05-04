@@ -9,7 +9,9 @@ Welcome to AccountChain
 	- [addTransaction](#addTransaction)
 	- [calcPoint](#calcPoint)
 	- [calcPointValue](#calcPointValue)
+	- [addPointRecord](#addPointRecord)
 	- [addPromotion](#addPromotion)
+	- [bookAccrualAccount](#bookAccrualAccount)
 - [Link](#link)
 	- [Anchor links](#anchor-links)
 - [Blockquote](#blockquote)
@@ -120,7 +122,10 @@ The addPointRecord function is triggered by [addTransaction](#addTransaction) to
         string status; // a point has three status "Active", "Converted to voucher", "Expired"
     }
 ```
-A point can exhibit three different states – “Active”; “Converted into voucher” and “Expired”, whereby the status is set to “Active” at issuance.  After the points have been recorded, the addPointRecord function triggers the bookAccrualAccount function to book the total value of points issued in the pharmacy’s point accrual account. This accrued balance denotes a reduction in revenue which is therefore VAT-deductible. 
+```solidity
+        pointRecord[] pointRecordList;
+```
+A point can exhibit three different states – “Active”; “Converted into voucher” and “Expired”, whereby the status is set to “Active” at issuance.  After the points have been recorded, the addPointRecord function triggers the [bookAccrualAccount](#bookAccrualAccount) function to book the total value of points issued in the pharmacy’s point accrual account. This accrued balance denotes a sell discount, which is VAT-deductible. 
 ```solidity
     function addPointRecord(uint _clientID, uint _pharmacyID, uint _point, uint _pointValue,  product memory  _product) internal {
             pointRecordList[pointRecordList.length].clientID = _clientID;
@@ -136,6 +141,8 @@ A point can exhibit three different states – “Active”; “Converted into v
 ### addPromotion
 
 ### expirePoint
+
+### bookAccrualAccount
 
 **GitHub Pages** is a free and easy way to create a website using the code that lives in your GitHub repositories. You can use GitHub Pages to build a portfolio of your work, create a personal website, or share a fun project that you coded with the world. GitHub Pages is automatically enabled in this repository, but when you create new repositories in the future, the steps to launch a GitHub Pages website will be slightly different.
 
