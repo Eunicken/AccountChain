@@ -3,7 +3,7 @@ Welcome to AccountChain
 
 
 - [Introduction](#Introduction)
-- [Titles](#titles)
+- [Project Description](#Project-Description)
 - [Paragraph](#paragraph)
 - [List](#list)
 	- [List CheckBox](#list-checkbox)
@@ -37,7 +37,7 @@ Welcome to *AccountChain©*!
 
 <img width="1039" alt="rename_screenshot" src="images/3D-mockup.jpg">
 
-## Project Description
+# Project Description
 
 Based on the Request for Solution of TopPharm, the main task of this project was to examine the question whether and to what extent blockchain technology can help to improve customer loyalty programs with regard to real-time data integrity, transparency, and security. In this respect, we have evaluated whether blockchain technology in fact delivers a value added compared to a traditional database approach. The result of our assessment clearly underlines that there are significant advantages for all previously mentioned criteria. We have therefore conceptualized *AccountChain©* which is a decentral, fully transparent and fraud-protected loyalty platform, embedded in a permissioned ledger Hyperledger Fabric blockchain environment. It ensures data security through cryptographically signed transaction history and helps to increase efficiency by automating accounting processes. The concept further includes a special focus on a fraud-protected voucher redemption process, applying cryptographic hash functions to mitigate the risk of counterfeited occurrence of financial liabilities in the network. To summarize, the *AccountChain©* ecosystem creates transparency, data security, and increased efficiency further leading to cost savings, for customer loyalty networks consisting of independent legal entities who do not necessarily trust each other but pursue the same business goals. 
 
