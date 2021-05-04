@@ -9,6 +9,7 @@ Welcome to AccountChain
 	- [addTransaction](#addTransaction)
 	- [calcPoint](#calcPoint)
 	- [calcPointValue](#calcPointValue)
+	- [addPromotion](#addPromotion)
 - [Link](#link)
 	- [Anchor links](#anchor-links)
 - [Blockquote](#blockquote)
@@ -73,7 +74,7 @@ All transactions are stored in a mapping <transactionList> using the unique tran
 ```solidity
 mapping (uint => transaction) transactionList;
 ```   
-addTransaction further calls the [calcPoint](#calcPoint) and [calcPointValue](#calcPointValue) functions to calculate the points and point values related to the transaction and to store this information as part of a transaction in transactionList. The attribute PointValue is introduced to record the value of points from the issuing pharmacy’s point of view. Let’s elaborate briefly on this. If points issued are not combined with any promotion, a point has a (default) value of CHF 0.01. On the other side, let’s assume that there exists a x20 multi-point promotion. In this case, from a pharmacy’s point of view, one point has a value equal to CHF 0.0005 since the promotion is paid by the producer, not by pharmacies. In other words, the fraction of additional points issued here (19/20) must be charged to third parties. For the pharmacy itself, the points issued in this transaction therefore only have a value (to be paid) of CHF 0.01/20 = CHF 0.0005. Additionally, data related to multi-point promotions is stored in promotionList. The promotions can be updated through [addPromotion](#addPromotion) function. After calculating the number of points and their respective point value, the addTransaction function updates the PointRecordList and therefore the client’s point account. As described in section 5.7, an event will be triggered to create a clean voucher code in an off-chain application as soon as a client has reached a point balance of 500. Subsequently, the Chaincode function IssueVoucher is called to record the existence and attributes of the respective voucher. 
+addTransaction further calls the [calcPoint](#calcPoint) and [calcPointValue](#calcPointValue) functions to calculate the points and point values related to the transaction and to store this information as part of a transaction in transactionList. The attribute PointValue is introduced to record the value of points from the issuing pharmacy’s point of view. Let’s elaborate briefly on this. If points issued are not combined with any promotion, a point has a (default) value of CHF 0.01. On the other side, let’s assume that there exists a x20 multi-point promotion. In this case, from a pharmacy’s point of view, one point has a value equal to CHF 0.0005 since the promotion is paid by the producer, not by pharmacies. In other words, the fraction of additional points issued here (19/20) must be charged to third parties. For the pharmacy itself, the points issued in this transaction therefore only have a value (to be paid) of CHF 0.01/20 = CHF 0.0005. Additionally, data related to multi-point promotions is stored in promotionList. The promotions can be added through [addPromotion](#addPromotion) function. After calculating the number of points and their respective point value, the addTransaction function updates the PointRecordList by calling [addPointRecord](#addPointRecord) function and therefore the client’s point account. After checking the point validity through [expirePoint](#expirePoint) function, an event will be triggered to create a clean voucher code in an off-chain application as soon as a client has reached a point balance of 500. Subsequently, the Chaincode function IssueVoucher is called to record the existence and attributes of the respective voucher. 
     
 [Go to Real Cool Heading section](##-rename-this-repository-to-publish-your-site)
 
@@ -81,7 +82,11 @@ addTransaction further calls the [calcPoint](#calcPoint) and [calcPointValue](#c
 
 ### calcPointValue
 
+### addPointRecord
+
 ### addPromotion
+
+### expirePoint
 
 **GitHub Pages** is a free and easy way to create a website using the code that lives in your GitHub repositories. You can use GitHub Pages to build a portfolio of your work, create a personal website, or share a fun project that you coded with the world. GitHub Pages is automatically enabled in this repository, but when you create new repositories in the future, the steps to launch a GitHub Pages website will be slightly different.
 
