@@ -74,9 +74,32 @@ All transactions are stored in a mapping <transactionList> using the unique tran
 ```solidity
 mapping (uint => transaction) transactionList;
 ```   
-addTransaction further calls the [calcPoint](#calcPoint) and [calcPointValue](#calcPointValue) functions to calculate the points and point values related to the transaction and to store this information as part of a transaction in transactionList. The attribute PointValue is introduced to record the value of points from the issuing pharmacy’s point of view. Let’s elaborate briefly on this. If points issued are not combined with any promotion, a point has a (default) value of CHF 0.01. On the other side, let’s assume that there exists a x20 multi-point promotion. In this case, from a pharmacy’s point of view, one point has a value equal to CHF 0.0005 since the promotion is paid by the producer, not by pharmacies. In other words, the fraction of additional points issued here (19/20) must be charged to third parties. For the pharmacy itself, the points issued in this transaction therefore only have a value (to be paid) of CHF 0.01/20 = CHF 0.0005. Additionally, data related to multi-point promotions is stored in promotionList. The promotions can be added through [addPromotion](#addPromotion) function. After calculating the number of points and their respective point value, the addTransaction function updates the PointRecordList by calling [addPointRecord](#addPointRecord) function and therefore the client’s point account. After checking the point validity through [expirePoint](#expirePoint) function, an event will be triggered to create a clean voucher code in an off-chain application as soon as a client has reached a point balance of 500. Subsequently, the Chaincode function IssueVoucher is called to record the existence and attributes of the respective voucher. 
-    
-[Go to Real Cool Heading section](##-rename-this-repository-to-publish-your-site)
+addTransaction further calls the [calcPoint](#calcPoint) and [calcPointValue](#calcPointValue) functions to calculate the points and point values related to the transaction and to store this information as part of a transaction in transactionList. The attribute PointValue is introduced to record the value of points from the issuing pharmacy’s point of view. Let’s elaborate briefly on this. If points issued are not combined with any promotion, a point has a (default) value of CHF 0.01. On the other side, let’s assume that there exists a x20 multi-point promotion. In this case, from a pharmacy’s point of view, one point has a value equal to CHF 0.0005 since the promotion is paid by the producer, not by pharmacies. In other words, the fraction of additional points issued here (19/20) must be charged to third parties. For the pharmacy itself, the points issued in this transaction therefore only have a value (to be paid) of CHF 0.01/20 = CHF 0.0005. Additionally, data related to multi-point promotions is stored in promotionList. The promotions can be added through [addPromotion](#addPromotion) function. After calculating the number of points and their respective point value, the addTransaction function updates the PointRecordList by calling [addPointRecord](#addPointRecord) function and therefore the client’s point account. After checking the point validity through [expirePoint](#expirePoint) function, an event will be triggered to create a clean voucher code in an off-chain application as soon as a client has reached a point balance of 500.     
+```solidity
+    function addTransaction(uint _clientID, uint _pharmacyID, product[] memory _product, uint transactionID) public {
+        uint _point;
+        uint _pointValue;
+        lengthTransactionList++;
+        for (uint i= 0; i < _product.length; i++){
+            transactionList[transactionID].productSold[_product[i].productID] = _product[i];
+            _point = calcPoint(_product[i]);
+            _pointValue = calcPointValue( _product[i]);            
+            addPointRecord(_clientID, _pharmacyID, _point, _pointValue, _product[i]);
+            transactionList[transactionID].point = _point;
+            transactionList[transactionID].pointValue = _pointValue;
+        }
+         transactionList[transactionID].pharmacyID = _pharmacyID;
+        checkClientActivity();
+        expirePoint();
+            if ((compareStrings(clientList[_clientID].status, "Active"))) {
+                clientList[_clientID].point = clientList[_clientID].point + _point;
+                clientList[_clientID].lastPurchaseTime = block.timestamp;
+                if (clientList[_clientID].point >= 100 * voucherValue) {
+                    emit GenerateVoucherCode(clientList[_clientID].clientID);
+                }
+        }
+    }
+```
 
 ### calcPoint
 
