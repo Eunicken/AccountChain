@@ -125,7 +125,7 @@ addTransaction further calls the [calcPoint](#calcPoint) and [calcPointValue](#c
 ```
 ### addPointRecord
 
-The addPointRecord function is triggered by [addTransaction](#addTransaction) to record points in PointRecordList. Each point has attributes such as the client ID, pharmacy ID, point value, point issue timestamp, tax category of the respective purchased products and a status. 
+Let's have a look how loyalty points are processed in Chaincode. The addPointRecord function is triggered by [addTransaction](#addTransaction) to record points in PointRecordList. Each point has attributes such as the client ID, pharmacy ID, point value, point issue timestamp, tax category of the respective purchased products and a status. 
 ```solidity
    struct pointRecord {
         uint pharmacyID;
