@@ -5,16 +5,30 @@ Welcome to AccountChain
 - [Introduction](#Introduction)
 - [Project Description](#Project-Description)
 - [Technical Documentation](#Technical-Documentation)
-- [Chaincode Functions](#Chaincode-Functions)
+- [Chaincode Description](#Chaincode-Description)
+- [Main Functions](#Main-Functions)
 	- [addTransaction](#addTransaction)
 	- [addPointRecord](#addPointRecord)
+	- [expirePoint](#expirePoint)
+	- [issueVoucher](#issueVoucher)
+	- [convertPoint](#convertPoint)
+	- [expireVoucher](#expireVoucher)
+	- [redeemVoucher](#redeemVoucher)
+- [Other Functions](#Other-Functions)
 	- [calcPoint](#calcPoint)
 	- [calcPointValue](#calcPointValue)
 	- [](#)
-	- [addPromotion](#addPromotion)
+	- [](#)
 	- [bookAccrualAccount](#bookAccrualAccount)
+	- [addPromotion](#addPromotion)
 	- [queryPromotionMultiple](#queryPromotionMultiple)
 	- [queryPromotionPointValue](#queryPromotionPointValue)
+	- [setPromotionListUpdateTimeinterval](#setPromotionListUpdateTimeinterval)
+	- [setPointValidityPeriod](#setPointValidityPeriod)
+	- [setVoucherValidityPeriod](#setVoucherValidityPeriod)
+	- [pointListrelatedtoVoucher](#pointListrelatedtoVoucher)
+	- [changeVoucherStatus](#changeVoucherStatus)
+	- [compareStrings](#compareStrings)
 - [Link](#link)
 	- [Anchor links](#anchor-links)
 - [Blockquote](#blockquote)
@@ -56,9 +70,13 @@ This technical documentation mainly contains the explanation to the smart contra
 - The Client User Interface [AccountChain App](https://xd.adobe.com/view/b63ae9ae-8d0c-4d6c-b447-ee5eade2a5d9-e369/?fullscreen&hints=off)
 - The Pharmacy User Interface [AccountChain WebApp](https://public.tableau.com/profile/dominik.merz#!/vizhome/shared/354DZRXPK)
 
-# Chaincode Functions
+# Chaincode Description
 
 Chaincode is the Smart Contract in Hyperledger, which plays a central role in the *AccountChain©* application. It documents transactions, manages promotions, calculates tax and current accounts, and cryptographically verifies the actual existence and validity of vouchers during the redemption process. The main functions contained in our Chaincode are explained in the following.
+
+## Main Functions
+
+The main functions include [addTransaction](#addTransaction), [addPointRecord](#addPointRecord), [expirePoint](#expirePoint), [issueVoucher](#issueVoucher), [convertPoint](#convertPoint), [expireVoucher](#expireVoucher), [redeemVoucher](#redeemVoucher) 7 functions. These functions contain the substantial part of the codes to document transactions, calculate tax and current accounts, and  verify vouchers.
 
 ### addTransaction
 
@@ -107,6 +125,7 @@ addTransaction further calls the [calcPoint](#calcPoint) and [calcPointValue](#c
     }
 ```
 ### addPointRecord
+
 The addPointRecord function is triggered by [addTransaction](#addTransaction) to record points in PointRecordList. Each point has attributes such as the client ID, pharmacy ID, point value, point issue timestamp, tax category of the respective purchased products and a status. 
 ```solidity
    struct pointRecord {
@@ -137,6 +156,25 @@ A point can exhibit three different states – “Active”; “Converted into v
             bookAccrualAccount(_pharmacyID, int(_pointValue), taxCategoryList[_product.productID]);
     }
 ```
+### expirePoint
+
+
+### IssueVoucher
+
+
+### convertPoint
+
+
+### expireVoucher
+
+
+### redeemVoucher
+
+
+## Other Functions
+
+The other functions play a supporting role in the Smart Contract supports to realize the *AccountChain©* functions. 
+
 ### calcPoint
 The calcPoint function is called by [addTransaction](#addTransaction) to calculate the total points that a client can obtain for one purchase. This function calls [queryPromotionMultiple](#queryPromotionMultiple) to calculate up-to-date promotion applied.
 ```solidity
@@ -149,7 +187,7 @@ The calcPoint function is called by [addTransaction](#addTransaction) to calcula
     }
 ``` 
 ### calcPointValue
-The calcPointValue function is called by [addTransaction](#addTransaction) to calculate the point value that a pharmacy has to book in their point accrual account for one purchase. This function calls [queryPromotionMultiple](#queryPromotionMultiple) to calculate up-to-date promotion applied and calls [queryPromotionPointValue](#queryPromotionPointValue) to calculate the value for each issued point. Ordinarily, the pointValue equals to 1/Promotion_Multiple. However, the producers can set the pointValue smaller than 1/Promotion_Multiple to encourage the pharmacies to sell more their products.
+The calcPointValue function is called by [addTransaction](#addTransaction) to calculate the point value that a pharmacy has to book in their point accrual account for one purchase. This function calls [queryPromotionMultiple](#queryPromotionMultiple) to calculate up-to-date promotion applied and calls [queryPromotionPointValue](#queryPromotionPointValue) to calculate the value for each issued point. Ordinarily, the pointValue equals to 1/Promotion_Multiple. However, the producers can set the pointValue smaller than 1/Promotion_Multiple to encourage the pharmacies to sell their products.
 ```solidity
     function calcPointValue(product memory _product) internal returns(uint _pointValue){
         uint _point = 0;
@@ -162,17 +200,19 @@ The calcPointValue function is called by [addTransaction](#addTransaction) to ca
     }
 ```
 
-### addPromotion
-
 ### expirePoint
 
 ### bookAccrualAccount
 
+
+### addPromotion
+
 ### queryPromotionMultiple
-This function is called by [calcPoint](#calcPoint) and [calcPointValue](#calcPointValue) functions to calculate the up-to-date promotions.
+This function is called by [calcPoint](#calcPoint) and [calcPointValue](#calcPointValue) functions to calculate the up-to-date promotions. This function sets the multiple = 1 as default. First, the promotion is updated to its latest state by calling  [updatePromotion](#updatePromotion) function.
 ```solidity
     function queryPromotionMultiple(uint productID) internal returns(uint){
         uint _multiple = 1;
+        updatePromotion();
             for (uint i = 0; i < promotionList.length; i++) {
             if (promotionList[i].productID == productID && promotionList[i].beginTime <= block.timestamp && promotionList[i].endTime >= block.timestamp) {
                     _multiple = promotionList[i].multiple;
@@ -196,6 +236,39 @@ This function is called by [calcPointValue](#calcPointValue) functions to calcul
         return _pointValue;
     }
 ```
+### updatePromotion
+updatePromotion function updates the promotion information to its latest state. To avoid too frequent update for a higher efficiency and lower system running cost, the default setting is maximal only one update per hour. This setting fulfills the needs in the reality, because a promotion in the system starts at the beginning of one day at 00:00:00 and ends at 23:59:59 on the same day or on another day. During overnight period (11 pm. to 1 am. on the following), pharmacies are closed and the client cannot make their purchase during this period. Therefore, it is guaranteed that the points calculated are combined with the up-to-date promotion. The default setting of promotion update time interval can be changed through [setPromotionListUpdateTimeinterval](#setPromotionListUpdateTimeinterval) function. We choose maximal 1 update per hour to provide pharmacies the opportunities to set some flash sales.
+```solidity
+   function updatePromotion() internal {
+        if (block.timestamp - lastUpdatePromotion > timeIntervalPromotion) { // used to avoid too frequent update to promotionList to improve the efficiency
+        // The default setting is maximal one update per hour
+            for (uint j = 0; j < promotionList.length; j++) {
+                // delete expired promotion from the promotionList
+                if (promotionList[j].endTime < block.timestamp) { 
+                    delete promotionList[j];
+                    j--; // After deleting one expired element, the index stays at the same position for next loop
+                }
+            }
+        lastUpdatePromotion = block.timestamp; //update the last promotionList update time
+        }
+    }
+```
+### setPromotionListUpdateTimeinterval
+This function is used to set the promotion update time interval.
+```solidity
+   function setPromotionListUpdateTimeinterval(uint hour) public onlyOwner {
+        timeIntervalPromotion = hour * 1 hours;
+    }
+```
+
+### compareStrings
+compareStrings function is used to compare the strings in solidity, whether they are identical through its hash value.
+```solidity
+   function compareStrings(string memory s1, string memory s2) public view returns(bool){
+    return keccak256(abi.encodePacked(s1)) == keccak256(abi.encodePacked(s2));
+   }
+```
+
 **GitHub Pages** is a free and easy way to create a website using the code that lives in your GitHub repositories. You can use GitHub Pages to build a portfolio of your work, create a personal website, or share a fun project that you coded with the world. GitHub Pages is automatically enabled in this repository, but when you create new repositories in the future, the steps to launch a GitHub Pages website will be slightly different.
 
 [Learn more about GitHub Pages](https://pages.github.com/)
