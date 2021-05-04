@@ -21,7 +21,7 @@ This technical documentation mainly contains the explanation to the smart contra
 
 Chaincode is the Smart Contract in Hyperledger, which plays a central role in the *AccountChain©* application. It documents transactions, manages promotions, calculates tax and current accounts, and cryptographically verifies the actual existence and validity of vouchers during the redemption process. The main functions contained in our Chaincode are explained in the following.
 
-## addTransaction
+### addTransaction
 
 Everything starts with a purchase in one of the branches in the loyalty network. This function documents transactions on the blockchain, therefore denoting the first step in a loyalty point’s journey. 
 
@@ -43,7 +43,7 @@ mapping (uint => transaction) transactionList;
 addTransaction further calls the [calcPoint](#-calcPoint) and calcPointValue functions to calculate the points and point values related to the transaction and to store this information as part of a transaction in transactionList. 
     The attribute PointValue is introduced to record the value of points from the issuing pharmacy’s point of view. Let’s elaborate briefly on this. If points issued are not combined with any promotion, a point has a (default) value of CHF 0.01. On the other side, let’s assume that there exists a x20 multi-point promotion. In this case, from a pharmacy’s point of view, one point has a value equal to CHF 0.0005 since the promotion is paid by the producer, not by pharmacies. In other words, the fraction of additional points issued here (19/20) must be charged to third parties. For the pharmacy itself, the points issued in this transaction therefore only have a value (to be paid) of CHF 0.01/20 = CHF 0.0005. Additionally, data related to multi-point promotions is stored in promotionList.  After calculating the number of points and their respective point value, the addTransaction function updates the PointRecordList and therefore the client’s point account. As described in section 5.7, an event will be triggered to create a clean voucher code in an off-chain application as soon as a client has reached a point balance of 500. Subsequently, the Chaincode function IssueVoucher is called to record the existence and attributes of the respective voucher. 
     
-[Go to Real Cool Heading section](#-rename-this-repository-to-publish-your-site)
+[Go to Real Cool Heading section](##-rename-this-repository-to-publish-your-site)
 
 ## calcPoint
 
