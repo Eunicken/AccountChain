@@ -17,7 +17,7 @@ Welcome to AccountChain
 - [Other Functions](#Other-Functions)
 	- [calcPoint](#calcPoint)
 	- [calcPointValue](#calcPointValue)
-	- [](#)
+	- [bookPointfromClient](#bookPointfromClient)
 	- [](#)
 	- [bookAccrualAccount](#bookAccrualAccount)
 	- [addPromotion](#addPromotion)
@@ -158,6 +158,26 @@ A point can exhibit three different states – “Active”; “Converted into v
 ```
 ### expirePoint
 
+If a customer is inactive for three years, the respective points will expire. The expirePoint function makes sure that the status of points whose holding period overrides the expiration date is set to “Expired”. This process involves two booking activities. First, expired points are deducted from the client’s point account and second, the pharmacy’s point accrual account is adjusted down by the embedded point value of the expired points through [bookAccrualAccount](#bookAccrualAccount) function. This function is called by the above-metioned [addTransaction](#addTransaction) function to make sure that expired points are deducted before any point balance is updated. The validity period can be changed through function [setPointValidityPeriod](#setPointValidityPeriod).
+```solidity
+   function expirePoint() internal {
+        for (uint i=0; i<pointRecordList.length; i++) {
+            if (pointRecordList[i].issueTime + PointValidityPeriod * 365 days < block.timestamp && compareStrings(pointRecordList[i].status, "Active")) {
+                pointRecordList[i].status = "Expired";
+                pointRecordList[i].statusChangeTime = block.timestamp;
+                clientList[pointRecordList[i].clientID].point = clientList[pointRecordList[i].clientID].point - pointRecordList[i].point;
+                for (uint k=0; k<pharmacyList.length; k++) {
+                    if (pharmacyList[i].pharmacyID == pointRecordList[i].pharmacyID) {
+                    uint _taxCategory = pointRecordList[i].taxCategory;
+                    pharmacyList[k].accrualPoint.total = pharmacyList[k].accrualPoint.total - int(pointRecordList[i].pointValue);
+                    bookAccrualAccount(pharmacyList[i].pharmacyID, -int(pointRecordList[i].pointValue ), pointRecordList[i].taxCategory);
+                    break;
+                }
+                }
+            } 
+        }
+    }
+```
 
 ### IssueVoucher
 
@@ -173,7 +193,7 @@ A point can exhibit three different states – “Active”; “Converted into v
 
 ## Other Functions
 
-The other functions play a supporting role in the Smart Contract supports to realize the *AccountChain©* functions. 
+The other functions play a supporting role in the Smart Contract to realize the *AccountChain©* functions. 
 
 ### calcPoint
 The calcPoint function is called by [addTransaction](#addTransaction) to calculate the total points that a client can obtain for one purchase. This function calls [queryPromotionMultiple](#queryPromotionMultiple) to calculate up-to-date promotion applied.
@@ -199,11 +219,39 @@ The calcPointValue function is called by [addTransaction](#addTransaction) to ca
         return _point;
     }
 ```
+### bookPointfromClient
+This function is called to adjust the client's point account in case of points expiration and issuring voucher.
+```solidity
+    function bookPointfromClient(uint _clientID, uint _point) internal {
+                clientList[_clientID].point = clientList[_clientID].point - _point;
+    }
+```
 
 ### expirePoint
 
 ### bookAccrualAccount
 
+```solidity
+    function bookAccrualAccount(uint _pharmacyID, int _pointValue, uint _taxCategory) internal {
+        for (uint i=0; i<pharmacyList.length; i++) {
+            if (pharmacyList[i].pharmacyID == _pharmacyID) {
+                if (_taxCategory == 1) {
+                    pharmacyList[i].accrualPoint.taxCat1 = pharmacyList[i].accrualPoint.taxCat1 + _pointValue;
+                    pharmacyList[i].accrualPoint.total = pharmacyList[i].accrualPoint.total + _pointValue;
+                } else if (_taxCategory == 2) {
+                    pharmacyList[i].accrualPoint.taxCat2 = pharmacyList[i].accrualPoint.taxCat2 + _pointValue;
+                    pharmacyList[i].accrualPoint.total = pharmacyList[i].accrualPoint.total + _pointValue;
+                } else if (_taxCategory == 3) {
+                    pharmacyList[i].accrualPoint.taxCat3 = pharmacyList[i].accrualPoint.taxCat3 + _pointValue;
+                    pharmacyList[i].accrualPoint.total = pharmacyList[i].accrualPoint.total + _pointValue;
+                } else if (_taxCategory == 4) {
+                    pharmacyList[i].accrualPoint.taxCat4 = pharmacyList[i].accrualPoint.taxCat4 + _pointValue;
+                    pharmacyList[i].accrualPoint.total = pharmacyList[i].accrualPoint.total + _pointValue;
+                }
+            }
+        }
+    }
+```
 
 ### addPromotion
 
@@ -254,13 +302,29 @@ updatePromotion function updates the promotion information to its latest state. 
     }
 ```
 ### setPromotionListUpdateTimeinterval
+
 This function is used to set the promotion update time interval.
 ```solidity
    function setPromotionListUpdateTimeinterval(uint hour) public onlyOwner {
         timeIntervalPromotion = hour * 1 hours;
     }
 ```
+### setVoucherValidityPeriod
 
+The voucher validity period can be changed through this function. The default value is 2 years.
+```solidity
+   function setVoucherValidityPeriod(uint _voucherValidity) public onlyOwner {
+        VoucherValidityPeriod = _voucherValidity * 365 days;
+    }
+```
+### setPointValidityPeriod
+
+The voucher validity period can be changed through this function. The default value is 3 years.
+```solidity    
+   function setPointValidityPeriod(uint _pointValidity) public onlyOwner {
+        PointValidityPeriod = _pointValidity * 365 days;
+    }
+```
 ### compareStrings
 compareStrings function is used to compare the strings in solidity, whether they are identical through its hash value.
 ```solidity
