@@ -284,6 +284,27 @@ This function changes the point accrual account of a pharmacy. The point accrual
 
 ### addPromotion
 
+This function is used to add a promotion into the system. A promotion must contain the product ID, on which the promotion is applied for, the corresponding multiple and point value, and the beginning time and ending time of the promotion.
+```solidity
+    struct promotion {
+        uint productID;
+        uint multiple;
+        uint pointValue; //(in percent) In case with promotion, the pointValue is no more equal to 0.01 CHF, normally smaller than 0.01 CHF. 
+        uint beginTime;
+        uint endTime;  // in days
+    }
+```
+
+```solidity
+   function addPromotion(uint _productID, uint _multiple, uint _pointValue, uint _beginTime, uint _endTime ) public {
+        updatePromotion();
+        promotionList[promotionList.length].productID = _productID;
+        promotionList[promotionList.length].multiple = _multiple;
+        promotionList[promotionList.length].pointValue = _pointValue;
+        promotionList[promotionList.length].beginTime = _beginTime;
+        promotionList[promotionList.length].endTime = _endTime;
+    }
+```
 ### queryPromotionMultiple
 This function is called by [calcPoint](#calcPoint) and [calcPointValue](#calcPointValue) functions to calculate the up-to-date promotions. This function sets the multiple = 1 as default. First, the promotion is updated to its latest state by calling  [updatePromotion](#updatePromotion) function.
 ```solidity
@@ -332,7 +353,7 @@ updatePromotion function updates the promotion information to its latest state. 
 ```
 ### setPromotionListUpdateTimeinterval
 
-This function is used to set the promotion update time interval.
+This function is used to set the promotion update time interval. The default setting is maximal 1 promotion list update per hour.
 ```solidity
    function setPromotionListUpdateTimeinterval(uint hour) public onlyOwner {
         timeIntervalPromotion = hour * 1 hours;
