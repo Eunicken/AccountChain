@@ -4,7 +4,6 @@ Welcome to AccountChain
 
 - [Introduction](#Introduction)
 - [Project Description](#Project-Description)
-- [Technical Documentation](#Technical-Documentation)
 - [Chaincode Description](#Chaincode-Description)
 - [Main Functions](#Main-Functions)
 	- [addTransaction](#addTransaction)
@@ -707,7 +706,7 @@ _   underscore
 
 See more: [https://shields.io/](https://shields.io/)
 
-[![GitHub forks](https://img.shields.io/github/forks/fefong/markdown_readme)](https://github.com/fefong/markdown_readme/network)
+[![AccountChain App](https://img.shields.io/github/forks/fefong/markdown_readme)](https://github.com/fefong/markdown_readme/network)
 ![Markdown](https://img.shields.io/badge/markdown-project-red)
 
 # Markdown Editor
@@ -716,11 +715,10 @@ See more: [https://shields.io/](https://shields.io/)
 
 # Some links for more in depth learning
 
-:page_facing_up: [Markdown Extras](https://github.com/fefong/markdown_readme/blob/master/markdown-extras.md#markdown---extras)
+:page_facing_up: [AccountChain App](https://xd.adobe.com/view/b63ae9ae-8d0c-4d6c-b447-ee5eade2a5d9-e369/?fullscreen&hints=off)
 
-:page_facing_up: [Wikipedia - Markdown](https://pt.wikipedia.org/wiki/Markdown)
+:page_facing_up: [AccountChain WebApp](https://public.tableau.com/profile/dominik.merz#!/vizhome/shared/354DZRXPK)
 
-:page_facing_up: [Oficial](https://daringfireball.net/projects/markdown/)
 
 
 
