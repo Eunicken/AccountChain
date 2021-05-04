@@ -4,9 +4,11 @@ Welcome to AccountChain
 
 - [Introduction](#Introduction)
 - [Project Description](#Project-Description)
-- [Paragraph](#paragraph)
-- [List](#list)
-	- [List CheckBox](#list-checkbox)
+- [Technical Documentation](#Technical-Documentation)
+- [Chaincode Functions](#Chaincode-Functions)
+	- [addTransaction](#addTransaction)
+	- [calcPoint](#calcPoint)
+	- [calcPointValue](#calcPointValue)
 - [Link](#link)
 	- [Anchor links](#anchor-links)
 - [Blockquote](#blockquote)
@@ -41,14 +43,14 @@ Welcome to *AccountChain©*!
 
 Based on the Request for Solution of TopPharm, the main task of this project was to examine the question whether and to what extent blockchain technology can help to improve customer loyalty programs with regard to real-time data integrity, transparency, and security. In this respect, we have evaluated whether blockchain technology in fact delivers a value added compared to a traditional database approach. The result of our assessment clearly underlines that there are significant advantages for all previously mentioned criteria. We have therefore conceptualized *AccountChain©* which is a decentral, fully transparent and fraud-protected loyalty platform, embedded in a permissioned ledger Hyperledger Fabric blockchain environment. It ensures data security through cryptographically signed transaction history and helps to increase efficiency by automating accounting processes. The concept further includes a special focus on a fraud-protected voucher redemption process, applying cryptographic hash functions to mitigate the risk of counterfeited occurrence of financial liabilities in the network. To summarize, the *AccountChain©* ecosystem creates transparency, data security, and increased efficiency further leading to cost savings, for customer loyalty networks consisting of independent legal entities who do not necessarily trust each other but pursue the same business goals. 
 
-## Technical Documentation
+# Technical Documentation
 
 This technical documentation mainly contains the explanation to the smart contract. Additionally, the 2 mock-up user interfaces are also shortly described. 
 - The Smart Contract code **AccountChain.sol** written in solidity, can be found on the GitHub Page and it has been uploaded through Adam as well.
 - The Client User Interface [AccountChain App](https://xd.adobe.com/view/b63ae9ae-8d0c-4d6c-b447-ee5eade2a5d9-e369/?fullscreen&hints=off)
 - The Pharmacy User Interface [AccountChain WebApp](https://public.tableau.com/profile/dominik.merz#!/vizhome/shared/354DZRXPK)
 
-## Chaincode Description
+# Chaincode Functions
 
 Chaincode is the Smart Contract in Hyperledger, which plays a central role in the *AccountChain©* application. It documents transactions, manages promotions, calculates tax and current accounts, and cryptographically verifies the actual existence and validity of vouchers during the redemption process. The main functions contained in our Chaincode are explained in the following.
 
@@ -71,12 +73,14 @@ All transactions are stored in a mapping <transactionList> using the unique tran
  ```
 mapping (uint => transaction) transactionList;
 ```   
-addTransaction further calls the [calcPoint](#-calcPoint) and calcPointValue functions to calculate the points and point values related to the transaction and to store this information as part of a transaction in transactionList. 
+addTransaction further calls the [calcPoint](#calcPoint) and calcPointValue functions to calculate the points and point values related to the transaction and to store this information as part of a transaction in transactionList. 
     The attribute PointValue is introduced to record the value of points from the issuing pharmacy’s point of view. Let’s elaborate briefly on this. If points issued are not combined with any promotion, a point has a (default) value of CHF 0.01. On the other side, let’s assume that there exists a x20 multi-point promotion. In this case, from a pharmacy’s point of view, one point has a value equal to CHF 0.0005 since the promotion is paid by the producer, not by pharmacies. In other words, the fraction of additional points issued here (19/20) must be charged to third parties. For the pharmacy itself, the points issued in this transaction therefore only have a value (to be paid) of CHF 0.01/20 = CHF 0.0005. Additionally, data related to multi-point promotions is stored in promotionList.  After calculating the number of points and their respective point value, the addTransaction function updates the PointRecordList and therefore the client’s point account. As described in section 5.7, an event will be triggered to create a clean voucher code in an off-chain application as soon as a client has reached a point balance of 500. Subsequently, the Chaincode function IssueVoucher is called to record the existence and attributes of the respective voucher. 
     
 [Go to Real Cool Heading section](##-rename-this-repository-to-publish-your-site)
 
-## calcPoint
+### calcPoint
+
+### calcPointValue
 
 **GitHub Pages** is a free and easy way to create a website using the code that lives in your GitHub repositories. You can use GitHub Pages to build a portfolio of your work, create a personal website, or share a fun project that you coded with the world. GitHub Pages is automatically enabled in this repository, but when you create new repositories in the future, the steps to launch a GitHub Pages website will be slightly different.
 
