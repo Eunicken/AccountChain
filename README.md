@@ -196,6 +196,7 @@ If a customer is inactive for three years, the respective points will expire. Th
 The other functions play a supporting role in the Smart Contract to realize the *AccountChain©* functions. 
 
 ### calcPoint
+
 The calcPoint function is called by [addTransaction](#addTransaction) to calculate the total points that a client can obtain for one purchase. This function calls [queryPromotionMultiple](#queryPromotionMultiple) to calculate up-to-date promotion applied.
 ```solidity
    function calcPoint(product memory _product) internal returns(uint _point){
@@ -207,6 +208,7 @@ The calcPoint function is called by [addTransaction](#addTransaction) to calcula
     }
 ``` 
 ### calcPointValue
+
 The calcPointValue function is called by [addTransaction](#addTransaction) to calculate the point value that a pharmacy has to book in their point accrual account for one purchase. This function calls [queryPromotionMultiple](#queryPromotionMultiple) to calculate up-to-date promotion applied and calls [queryPromotionPointValue](#queryPromotionPointValue) to calculate the value for each issued point. Ordinarily, the pointValue equals to 1/Promotion_Multiple. However, the producers can set the pointValue smaller than 1/Promotion_Multiple to encourage the pharmacies to sell their products.
 ```solidity
     function calcPointValue(product memory _product) internal returns(uint _pointValue){
@@ -220,6 +222,7 @@ The calcPointValue function is called by [addTransaction](#addTransaction) to ca
     }
 ```
 ### bookPointfromClient
+
 This function is called to adjust the client's point account in case of points expiration and issuring voucher.
 ```solidity
     function bookPointfromClient(uint _clientID, uint _point) internal {
@@ -227,10 +230,36 @@ This function is called to adjust the client's point account in case of points e
     }
 ```
 
-### expirePoint
+### bookKKToppharm
+
+bookKKToppharm function is used to book the current account of one pharmacy. The current account books liabilies of one pharmacy, when the points issued by this pharmacy are converted into voucher and books receivables, when this pharmacy accepts the client voucher. The booking is carried out in 4 different tax categories.
+```solidity
+   function bookKKToppharm(uint _pharmacyID, int _pointValue, uint _taxCategory) internal {
+        for (uint i=0; i<pharmacyList.length; i++) {
+            if (pharmacyList[i].pharmacyID == _pharmacyID) {
+                if (_taxCategory == 1) {
+                    pharmacyList[i].accountKKToppharm.taxCat1 = pharmacyList[i].accountKKToppharm.taxCat1 + _pointValue;
+                    pharmacyList[i].accountKKToppharm.total = pharmacyList[i].accountKKToppharm.total + _pointValue;
+                } else if (_taxCategory == 2) {
+                    pharmacyList[i].accountKKToppharm.taxCat2 = pharmacyList[i].accountKKToppharm.taxCat2 + _pointValue;
+                    pharmacyList[i].accountKKToppharm.total = pharmacyList[i].accountKKToppharm.total + _pointValue;
+                } else if (_taxCategory == 3) {
+                    pharmacyList[i].accountKKToppharm.taxCat3 = pharmacyList[i].accountKKToppharm.taxCat3 + _pointValue;
+                    pharmacyList[i].accountKKToppharm.total = pharmacyList[i].accountKKToppharm.total + _pointValue;
+                } else if (_taxCategory == 4) {
+                    pharmacyList[i].accountKKToppharm.taxCat4 = pharmacyList[i].accountKKToppharm.taxCat4 + _pointValue;
+                    pharmacyList[i].accountKKToppharm.total = pharmacyList[i].accountKKToppharm.total + _pointValue;
+                } else if (_taxCategory == 5) { //Only the total KKToppharm Account is relevant.
+                   pharmacyList[i].accountKKToppharm.total = pharmacyList[i].accountKKToppharm.total + _pointValue;
+                }
+            }
+        }
+    }
+```
 
 ### bookAccrualAccount
 
+This function changes the point accrual account of a pharmacy. The point accrual account denotes the point value issued by a pharmacy. This point value in the point accrual account is considered as sell discount in pharmacy's accounting, which is VAT-deductible. Therefore, the booking is categorized into 4 different tax classes.
 ```solidity
     function bookAccrualAccount(uint _pharmacyID, int _pointValue, uint _taxCategory) internal {
         for (uint i=0; i<pharmacyList.length; i++) {
