@@ -106,7 +106,33 @@ addTransaction further calls the [calcPoint](#calcPoint) and [calcPointValue](#c
 ### calcPointValue
 
 ### addPointRecord
-
+The addPointRecord function is triggered by [addTransaction](#addTransaction) to record points in PointRecordList. Each point has attributes such as the client ID, pharmacy ID, point value, point issue timestamp, tax category of the respective purchased products and a status. 
+```solidity
+        struct pointRecord {
+        uint pharmacyID;
+        uint clientID;
+        uint point;
+        uint pointValue;
+        uint issueTime;
+        uint statusChangeTime; //document the lastes status change time to enable query within a certain period.
+        uint taxCategory;
+        bytes32 hashVoucherCode; // After changing the point into voucher, the hash voucher code is stored here.
+        string status; // a point has three status "Active", "Converted to voucher", "Expired"
+    }
+```
+A point can exhibit three different states – “Active”; “Converted into voucher” and “Expired”, whereby the status is set to “Active” at issuance.  After the points have been recorded, the addPointRecord function triggers the bookAccrualAccount function to book the total value of points issued in the pharmacy’s point accrual account. This accrued balance denotes a reduction in revenue which is therefore VAT-deductible. 
+```solidity
+    function addPointRecord(uint _clientID, uint _pharmacyID, uint _point, uint _pointValue,  product memory  _product) internal {
+            pointRecordList[pointRecordList.length].clientID = _clientID;
+            pointRecordList[pointRecordList.length].pharmacyID = _pharmacyID;
+            pointRecordList[pointRecordList.length].point = _point;
+            pointRecordList[pointRecordList.length].pointValue = _pointValue;
+            pointRecordList[pointRecordList.length].issueTime = block.timestamp;
+            pointRecordList[pointRecordList.length].taxCategory = taxCategoryList[_product.productID];
+            pointRecordList[pointRecordList.length].status = "Active";
+            bookAccrualAccount(_pharmacyID, int(_pointValue), taxCategoryList[_product.productID]);
+    }
+```
 ### addPromotion
 
 ### expirePoint
