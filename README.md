@@ -521,9 +521,9 @@ compareStrings function is used to compare the strings in solidity, whether they
 
 # Links for User Interfaces
 
-:page_facing_up: [AccountChain App](tiny.cc/AccountChainApp)
+:page_facing_up: [AccountChain App](https://tiny.cc/AccountChainApp)
 
-:page_facing_up: [AccountChain WebApp](tiny.cc/AccountChainWeb)
+:page_facing_up: [AccountChain WebApp](https://tiny.cc/AccountChainWeb)
 
 
 
