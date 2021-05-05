@@ -16,7 +16,6 @@ contract AccountChain {
     }
     
     struct pharmacy {
-        address pharmacyAddress;
         uint pharmacyID;
         accrualAccount accrualPoint; //Rückstellung für vergebene Punkte
         KKToppharmAccount accountKKToppharm; //Account against Toppharm
@@ -66,7 +65,6 @@ contract AccountChain {
     }
     
     struct transaction {
-        // Transaction data is collected at the pharmacy with pharmacy's POS machine. Therefore, there is only pharmacy's address but no client's address
         uint pharmacyID;
         uint clientID;
         mapping (uint => product) productSold;
@@ -373,25 +371,20 @@ contract AccountChain {
                 clientList[_clientID].point = clientList[_clientID].point - _point;
     }
  
-    function queryVoucherList(string memory _status) public onlyOwner returns(voucher[] memory voucherList){
-        if (compareStrings(_status, "All")) {
-            return voucherList;
-        } else if (compareStrings(_status, "Active")) {
+    function queryVoucherList(string memory _status, uint _clientID) public returns(voucher[] memory voucherList){
             voucher[] memory tmp;
             for (uint i=0; i < voucherList.length; i++) {
-                if (compareStrings(voucherList[i].status, "Active")) {
+                if (voucherList[i].clientID == _clientID) {
+                if (compareStrings(voucherList[i].status, "Active") || compareStrings(voucherList[i].status, "Active")) {
                     tmp[tmp.length] = voucherList[i];
-                } else if (compareStrings(_status, "Inactive")) {
+                } else if (compareStrings(_status, "Expired") || compareStrings(voucherList[i].status, "Active")) {
                     voucher[] memory tmp;
-                    for (i=0; i < voucherList.length; i++) {
-                    if (compareStrings(voucherList[i].status, "Inactive")) {
-                        tmp[tmp.length] = voucherList[i];
+                    } else if (compareStrings(_status, "Used") || compareStrings(voucherList[i].status, "Active")) {
+                    voucher[] memory tmp;
+                    }
                 }
             }
         }
-    }
-        }
-    }
     
     function calcPoint(product memory _product) internal returns(uint _point){
         uint _point = 0;
@@ -451,7 +444,7 @@ contract AccountChain {
         }
     }
     
-    function pointListrelatedtoVoucher (bytes32 _hashVoucherCode) internal returns(pointRecord[] memory){
+    function pointListrelatedtoVoucher(bytes32 _hashVoucherCode) internal returns(pointRecord[] memory){
         pointRecord[] memory ret;
         uint idx;
         for (uint i=0; i<pointRecordList.length; i++) {
@@ -484,6 +477,7 @@ contract AccountChain {
     
     function queryPromotionMultiple(uint productID) internal returns(uint){
         uint _multiple = 1;
+        updatePromotion();
             for (uint i = 0; i < promotionList.length; i++) {
             if (promotionList[i].productID == productID && promotionList[i].beginTime <= block.timestamp && promotionList[i].endTime >= block.timestamp) {
                     _multiple = promotionList[i].multiple;
@@ -510,7 +504,7 @@ contract AccountChain {
     }
     
     function updatePromotion() internal {
-        if (block.timestamp - lastUpdatePromotion > timeIntervalPromotion) { // used to avoid too frequent update to promotionList
+        if (block.timestamp - lastUpdatePromotion > timeIntervalPromotion) { // used to avoid too frequent update to promotionList to improve the efficiency
         // The default setting is maximal one update per hour
             for (uint j = 0; j < promotionList.length; j++) {
                 // delete expired promotion from the promotionList
