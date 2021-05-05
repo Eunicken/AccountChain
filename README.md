@@ -211,9 +211,9 @@ Once the amount of points used to issue the respective voucher is deducted from 
         for (uint i=0; i<pointRecordList.length; i++) {
             if (_point > 0) { //The point required to issue a voucher is still positive. This means that more point records must be found to issue this voucher.
             if (compareStrings(pointRecordList[i].status,"Active") && pointRecordList[i].clientID == _clientID) {
-                //First Case: one point record has less than 500 points.
-                //Multiple point records must be combined to issue to voucher
-                // The point required to issure a voucher is deducted and it 
+                // First Case: one point record has less than _point amount of points needed to complete voucher issuance.
+                // Further point record must be combined to issue the voucher
+                // The _point required to issure a voucher is deducted and if it is still positive after deduction, it will be used for next loop 
                 if (pointRecordList[i].point < _point){
                     pointRecordList[i].status = "Coverted into voucher";
                     pointRecordList[i].hashVoucherCode = _hashVoucherCode;
@@ -221,7 +221,7 @@ Once the amount of points used to issue the respective voucher is deducted from 
                     bookAccrualAccount(pointRecordList[i].pharmacyID, - int(pointRecordList[i].pointValue), pointRecordList[i].taxCategory);
                     bookKKToppharm(pointRecordList[i].pharmacyID, - int(pointRecordList[i].pointValue), pointRecordList[i].taxCategory);
                     _point = _point - pointRecordList[i].point; // calculate the remaining points required to issue a voucher
-                    // Second case, one point record has exactly 500 points to issue a voucher
+                    // Second case, one point record has exactly _point amount of points to issue a voucher. The loop stops.
                 } else if (compareStrings(pointRecordList[i].status,"Active") && pointRecordList[i].point == _point) {
                     pointRecordList[i].status = "Coverted into voucher";
                     pointRecordList[i].hashVoucherCode = _hashVoucherCode;
@@ -230,8 +230,9 @@ Once the amount of points used to issue the respective voucher is deducted from 
                     bookKKToppharm(pointRecordList[i].pharmacyID, - int(pointRecordList[i].pointValue), pointRecordList[i].taxCategory);
                     break;
                 } else if (compareStrings(pointRecordList[i].status,"Active") && pointRecordList[i].point > _point) { 
-                // In case, that one point record has more than 500 points (or more than the remaining points required to issue a voucher). Only part of the points from this record is  
-                // converted to voucher and the remaining points are stored as a new point record at the end of pointRecordList.
+                // In case, that one point record has more than needed points. Only part of the points from this record is  
+                // converted to the voucher and the remaining points are stored as a new point record at the end of pointRecordList.
+	        // The loop stops.
                     pointRecordList[pointRecordList.length] = pointRecordList[i];
                     pointRecordList[pointRecordList.length].point = pointRecordList[i].point - _point;
                     pointRecordList[pointRecordList.length].statusChangeTime = block.timestamp;
@@ -251,7 +252,29 @@ Once the amount of points used to issue the respective voucher is deducted from 
 
 ### expireVoucher
 
-
+Like it is the case with points, also vouchers can expire. The expireVoucher function is called by [redeemVoucher](#redeemVoucher). This means that, before redeeming a voucher, it needs to be ensured that it has not yet expired. The expireVoucher function makes sure that unused vouchers expire after a certain period (2 years in our case). In contrast to the expirePoint function, it only involves one booking activity; the current account KKToppharm is adjusted down by the respective value of the voucher. This means that the pharmacy’s liability is reduced. Remember that we apply the FIFO ruling in a customer’s point transaction history. This becomes an important aspect when thinking of a case, in which several pharmacies have contributed to the point balance which was needed to issue a voucher. If such a voucher expires, the respective liabilities can be reduced proportionally since its transaction history has been fully recorded. 
+```solidity
+   function expireVoucher() internal {
+        for (uint i=0; i<voucherList.length; i++) {
+            if (voucherList[i].issueTime + VoucherValidityPeriod * 365 days < block.timestamp && compareStrings(voucherList[i].status, "Active")) {
+                voucherList[i].status = "Expired";
+                pointRecord[] memory _pointRecord;
+                _pointRecord = pointListrelatedtoVoucher(voucherList[i].hashVoucherCode);
+                changeVoucherStatus(voucherList[i].hashVoucherCode,  "Expired");
+                for (uint j=0; j<_pointRecord.length; j++){
+                for (uint k=0; k<pharmacyList.length; k++) {
+                    if (pharmacyList[k].pharmacyID == _pointRecord[j].pharmacyID) {
+                    uint _taxCategory = _pointRecord[j].taxCategory;
+                    pharmacyList[k].accountKKToppharm.total = int(pharmacyList[k].accountKKToppharm.total) - int(_pointRecord[j].pointValue);
+                    bookKKToppharm(_pointRecord[j].pharmacyID, -int(_pointRecord[j].pointValue), _taxCategory);
+                    break;
+                    }
+                }
+                }
+            } 
+        }
+    }
+``` 
 ### redeemVoucher
 
 
