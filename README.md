@@ -42,7 +42,7 @@ Welcome to *AccountChain©*!
 
 *AccountChain©* is a blockchain-based customer loyalty platform where transactions of non-monetized loyalty points are securely processed and immutably recorded in a permissioned ledger environment. The result is a **decentral**, **fully transparent**, and **fraud-protected** real-time accounting system. Moreover, it includes a cryptographically secured redemption process of loyalty points, mitigating risks of counterfeited occurrence of financial liabilities. AccountChain© is based on Hyperledger Fabric Blockchain and operates in a private permissioned ledger environment. 
 
-<img width="1039" alt="rename_screenshot" src="images/3D-mockup.jpg">
+<img width="1039" alt="rename_screenshot" src="images/AccountChain_Header.png">
 
 # Project Description
 
