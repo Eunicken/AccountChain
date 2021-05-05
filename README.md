@@ -125,7 +125,7 @@ addTransaction further calls the [calcPoint](#calcPoint) and [calcPointValue](#c
 ```
 ### addPointRecord
 
-Let's have a look how loyalty points are processed in Chaincode. The addPointRecord function is triggered by [addTransaction](#addTransaction) to record points in PointRecordList. Each point has attributes such as the client ID, pharmacy ID, point value, point issue timestamp, tax category of the respective purchased products and a status. 
+Let's have a look on how loyalty points are processed in Chaincode. The addPointRecord function is triggered by [addTransaction](#addTransaction) to record points in PointRecordList. Each point has attributes such as the client ID, pharmacy ID, point value, point issue timestamp, tax category of the respective purchased products and a status. 
 ```solidity
    struct pointRecord {
         uint pharmacyID;
@@ -180,7 +180,29 @@ If a customer is inactive for three years, the respective points will expire. Th
 
 ### IssueVoucher
 
-
+The points' journey continue in the system as a voucher, in case the client's point account reaches 500 points. The status in the pointRecordList is changed to "Converted to voucher" through function [convertPoint](#convertPoint). issueVoucher function is called by the off-chain application after generating a hash voucher code. It deducts the amount of points used to issue the respective voucher from a client’s point account through [bookPointfromClient](#bookPointfromClient). Additionally, the [convertPoint](#convertPoint) function (explained below) also executes all necessary accounting calculations. The hash voucher code (and not the clean voucher code of course) is stored into VoucherList, together with the client ID and voucher issuance time. Moreover, the voucher status is set to “Active”. This is important since only vouchers with a valid hash voucher code and status “Active” can be redeemed later on.
+```solidity
+    struct voucher {
+        uint clientID;
+        bytes32 hashVoucherCode;
+        string status;
+        uint issueTime;
+        uint voucherValue;
+    }
+```
+```solidity
+   function issueVoucher(uint _clientID, bytes32  _hashVoucherCode) internal {
+        uint _nrVoucherIssued = clientList[_clientID].point / (100*voucherValue);
+        voucherList[voucherList.length].clientID = _clientID;
+        voucherList[voucherList.length].hashVoucherCode = _hashVoucherCode;
+        voucherList[voucherList.length].status = "Active";
+        voucherList[voucherList.length].issueTime = block.timestamp;
+        // deduct points from client´s point statement and set the point record to "Converted to voucher"
+        // Adjust the point accrual account for the pharmacy
+        bookPointfromClient(_clientID, _nrVoucherIssued * 100 * voucherValue);
+        convertPoint(_clientID, _hashVoucherCode);
+    }
+```
 ### convertPoint
 
 
