@@ -522,6 +522,9 @@ compareStrings function is used to compare the strings in solidity, whether they
 |transactionList| Mapping | mapping (uint => transaction) transactionList|
 |clientList | Mapping |  mapping (uint => client) clientList|
 |promotionList | Array | promotion[] promotionList|
+|pharmacyList | Array | pharmacy[] pharmacyList|
+|voucherList | Array | voucher[] voucherList| 
+|pointRecordList | Array | pointRecord[] pointRecordList|
 
 # Links for User Interfaces
 
