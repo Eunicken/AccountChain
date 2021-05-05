@@ -30,7 +30,7 @@ Welcome to AccountChain
 	- [changeVoucherStatus](#changeVoucherStatus)
 	- [compareStrings](#compareStrings)
 - [Table](#table)
-	- [Table Align](#table-align)
+	- [Account Table](#Account-Table)
     	- [Align Center](#align-center)
     	- [Align Left](#align-left)
     	- [Align Right](#align-right)
@@ -504,11 +504,11 @@ compareStrings function is used to compare the strings in solidity, whether they
 ```
 
 # Table
-
-|Column 1|Column 2|Column 3|
+## Account Table
+|Account|Description|
 |---|---|---|
-|Row 1 Column1| Row 1 Column 2| Row 1 Column 3|
-|Row 2 Column1| Row 2 Column 2| Row 2 Column 3|
+|Row 1 Column1| Row 1 Column 2| 
+|Row 2 Column1| Row 2 Column 2| 
 
 >\|Column 1|Column 2|Column 3|<br>
 >\|---|---|---|<br>
