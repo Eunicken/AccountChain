@@ -515,7 +515,7 @@ compareStrings function is used to compare the strings in solidity, whether they
 |transaction | uint pharmacyID <br /> uint clientID <br /> mapping (uint => product) productSold <br /> uint point <br /> uint pointValue <br /> uint transactionTime|
 ## List Table
 |Name|Type|Definition|
-|:---:|:---:|:---:|
+|:---:|:---:|:---|
 |clientAddressList| Mapping | mapping (address => uint) clientAddressList | 
 |pharmacyAddressList| Mapping | mapping (address => uint) pharmacyAddressList | 
 |taxCategoryList| Mapping | mapping (uint => uint) taxCategoryList| 
