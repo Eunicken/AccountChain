@@ -16,6 +16,7 @@ Welcome to AccountChain
 - [Other Functions](#Other-Functions)
 	- [calcPoint](#calcPoint)
 	- [calcPointValue](#calcPointValue)
+	- [sortPointRecord](#sortPointRecord)
 	- [bookPointfromClient](#bookPointfromClient)
 	- [bookKKToppharm](#bookKKToppharm)
 	- [bookAccrualAccount](#bookAccrualAccount)
@@ -178,7 +179,7 @@ If a customer is inactive for three years, the respective points will expire. Th
     }
 ```
 
-### IssueVoucher
+### issueVoucher
 
 The points' journey continue in the system as a voucher, in case the client's point account reaches 500 points. The status in the pointRecordList is changed to "Converted to voucher" through function [convertPoint](#convertPoint). issueVoucher function is called by the off-chain application after generating a hash voucher code. It deducts the amount of points used to issue the respective voucher from a client’s point account through [bookPointfromClient](#bookPointfromClient). Additionally, the [convertPoint](#convertPoint) function (explained below) also executes all necessary accounting calculations. The hash voucher code (and not the clean voucher code of course) is stored into VoucherList, together with the client ID and voucher issuance time. Moreover, the voucher status is set to “Active”. This is important since only vouchers with a valid hash voucher code and status “Active” can be redeemed later on.
 ```solidity
@@ -197,14 +198,56 @@ The points' journey continue in the system as a voucher, in case the client's po
         voucherList[voucherList.length].hashVoucherCode = _hashVoucherCode;
         voucherList[voucherList.length].status = "Active";
         voucherList[voucherList.length].issueTime = block.timestamp;
-        // deduct points from client´s point statement and set the point record to "Converted to voucher"
-        // Adjust the point accrual account for the pharmacy
         bookPointfromClient(_clientID, _nrVoucherIssued * 100 * voucherValue);
         convertPoint(_clientID, _hashVoucherCode);
     }
 ```
 ### convertPoint
 
+Once the amount of points used to issue the respective voucher is deducted from the client’s point account in the [issueVoucher](#issueVoucher) function, the convertPoint function converts these points by changing the status from “Active” to “Converted into voucher”. Subsequently, the corresponding value is deducted from the pharmacy’s point accrual account and is booked as a liability in the pharmacy’s KKToppharm account. This denotes the current account of the pharmacy, containing consolidated receivables and liabilities against other entities in the network. By converting points into a voucher, the FIFO (first-in-first-out) ruling is applied to guarantee that old points are converted first. If a single point record is not yet enough to issue a voucher directly, the convertPoint function combines multiple point records to issue a voucher. On the other side, if a single point record has more points than the required amount to issue a voucher (500 in our case), the status of this point record is directly set to “Converted into voucher”. The unused part of points in this record is written into a new point record at the end of the <PointRecordList> where the point issuance time is equal to the initial point record timestamp. Next, the pointRecordList is sorted through [sortPointRecord](#sortPointRecord).  
+```solidity
+   function convertPoint(uint _clientID, bytes32 _hashVoucherCode) internal {
+        uint _point = voucherValue * 100;
+        for (uint i=0; i<pointRecordList.length; i++) {
+            if (_point > 0) { //The point required to issue a voucher is still positive. This means that more point records must be found to issue this voucher.
+            if (compareStrings(pointRecordList[i].status,"Active") && pointRecordList[i].clientID == _clientID) {
+                //First Case: one point record has less than 500 points.
+                //Multiple point records must be combined to issue to voucher
+                // The point required to issure a voucher is deducted and it 
+                if (pointRecordList[i].point < _point){
+                    pointRecordList[i].status = "Coverted into voucher";
+                    pointRecordList[i].hashVoucherCode = _hashVoucherCode;
+                    pointRecordList[i].statusChangeTime = block.timestamp;
+                    bookAccrualAccount(pointRecordList[i].pharmacyID, - int(pointRecordList[i].pointValue), pointRecordList[i].taxCategory);
+                    bookKKToppharm(pointRecordList[i].pharmacyID, - int(pointRecordList[i].pointValue), pointRecordList[i].taxCategory);
+                    _point = _point - pointRecordList[i].point; // calculate the remaining points required to issue a voucher
+                    // Second case, one point record has exactly 500 points to issue a voucher
+                } else if (compareStrings(pointRecordList[i].status,"Active") && pointRecordList[i].point == _point) {
+                    pointRecordList[i].status = "Coverted into voucher";
+                    pointRecordList[i].hashVoucherCode = _hashVoucherCode;
+                    pointRecordList[i].statusChangeTime = block.timestamp;
+                    bookAccrualAccount(pointRecordList[i].pharmacyID, - int(pointRecordList[i].pointValue), pointRecordList[i].taxCategory);
+                    bookKKToppharm(pointRecordList[i].pharmacyID, - int(pointRecordList[i].pointValue), pointRecordList[i].taxCategory);
+                    break;
+                } else if (compareStrings(pointRecordList[i].status,"Active") && pointRecordList[i].point > _point) { 
+                // In case, that one point record has more than 500 points (or more than the remaining points required to issue a voucher). Only part of the points from this record is  
+                // converted to voucher and the remaining points are stored as a new point record at the end of pointRecordList.
+                    pointRecordList[pointRecordList.length] = pointRecordList[i];
+                    pointRecordList[pointRecordList.length].point = pointRecordList[i].point - _point;
+                    pointRecordList[pointRecordList.length].statusChangeTime = block.timestamp;
+                    pointRecordList[i].status = "Coverted into voucher";
+                    pointRecordList[i].hashVoucherCode = _hashVoucherCode; 
+                    pointRecordList[i].statusChangeTime = block.timestamp;
+                    sortPointRecord();
+                    bookAccrualAccount(pointRecordList[i].pharmacyID, - int(pointRecordList[i].pointValue), pointRecordList[i].taxCategory);
+                    bookKKToppharm(pointRecordList[i].pharmacyID, - int(pointRecordList[i].pointValue), pointRecordList[i].taxCategory);
+                    break;
+                }
+            }
+        }
+        }
+    }
+```
 
 ### expireVoucher
 
@@ -240,6 +283,29 @@ The calcPointValue function is called by [addTransaction](#addTransaction) to ca
         _pointValue = queryPromotionPointValue(_product.productID);
         _point = _point + _product.unitPrice*_product.quantity*promotionMultiple*_pointValue/100;
         return _point;
+    }
+```
+### sortPointRecord
+
+The sortPointRecord sorts the pointRecord with its timestamp in a acending order. The algorithms applies is insert sorting.
+```solidity
+   function sortPointRecord() internal {
+        uint _timestamp = pointRecordList[pointRecordList.length-1].issueTime;
+        uint position;
+        bool positionFound = false;
+        pointRecord[] memory temp = pointRecordList;
+        for (uint i = 0; i < pointRecordList.length - 1; i++) {
+            if (pointRecordList[i].issueTime < _timestamp) {
+            temp[i] = pointRecordList[i];
+        } else if (pointRecordList[i].issueTime >= _timestamp && positionFound == false) {
+            positionFound = true;
+            temp[i] = pointRecordList[pointRecordList.length]; // The last record is inserted to the position based on issueTime
+            // the remaining point records are shifted one position back.
+        } else if (pointRecordList[i].issueTime >= _timestamp && positionFound == true) {
+            temp[i+1] = pointRecordList[i];
+        }
+        pointRecordList = temp;
+    }
     }
 ```
 ### bookPointfromClient
