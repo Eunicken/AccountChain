@@ -510,32 +510,18 @@ compareStrings function is used to compare the strings in solidity, whether they
 |client| address clientAddress <br /> uint clientID <br /> uint point <br /> uint lastPurchaseTime <br /> string status  <br /> mapping (bytes32 => voucher) voucherListClient| 
 |pharmacy | uint pharmacyID <br /> accrualAccount accrualPoint <br /> KKToppharmAccount accountKKToppharm | 
 |pointRecord | uint pharmacyID <br /> uint clientID <br /> uint point <br /> uint pointValue <br /> uint issueTime  <br /> uint statusChangeTime <br /> uint taxCategory <br /> bytes32 hashVoucherCode <br /> string status| 
-## Table Align
-
-## Align Center
-
-|Column 1|Column 2|Column 3|
+|voucher | uint clientID <br /> bytes32 hashVoucherCode <br /> string status <br /> uint issueTime <br /> uint voucherValue|
+|product |  uint productID <br /> uint unitPrice <br /> uint quantity <br /> uint taxCategory|
+|transaction | uint pharmacyID <br /> uint clientID <br /> mapping (uint => product) productSold <br /> uint point <br /> uint pointValue <br /> uint transactionTime|
+## List Table
+|Name|Type|Definition|
 |:---:|:---:|:---:|
-|Row 1 Column1| Row 1 Column 2| Row 1 Column 3|
-|Row 2 Column1| Row 2 Column 2| Row 2 Column 3|
-
->\|Column 1|Column 2|Column 3|<br>
->\|:---:|:---:|:---:|<br>
->\|Row 1 Column1| Row 1 Column 2| Row 1 Column 3|<br>
->\|Row 2 Column1| Row 2 Column 2| Row 2 Column 3|<br>
-
-## Align Left
-
-|Column 1|Column 2|Column 3|
-|:---|:---|:---|
-|Row 1 Column1| Row 1 Column 2| Row 1 Column 3|
-|Row 2 Column1| Row 2 Column 2| Row 2 Column 3|
-
->\|Column 1|Column 2|Column 3|<br>
->\|:---|:---|:---|<br>
->\|Row 1 Column1| Row 1 Column 2| Row 1 Column 3|<br>
->\|Row 2 Column1| Row 2 Column 2| Row 2 Column 3|<br>
-
+|clientAddressList| Mapping | mapping (address => uint) clientAddressList | 
+|pharmacyAddressList| Mapping | mapping (address => uint) pharmacyAddressList | 
+|taxCategoryList| Mapping | mapping (uint => uint) taxCategoryList| 
+|transactionList| Mapping | mapping (uint => transaction) transactionList|
+|clientList | Mapping |  mapping (uint => client) clientList|
+|promotionList | Array | promotion[] promotionList|
 
 # Links for User Interfaces
 
