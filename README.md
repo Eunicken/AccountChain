@@ -501,7 +501,7 @@ compareStrings function is used to compare the strings in solidity, whether they
 # Table
 ## Account Table
 |Account|Description|
-|:---:|:---:|
+|:---:|:---|
 |accrualAccount| The point accrual Account denotes the issued points as a sell discount, which is VAT-deductible.|
 |KKToppharmAccount | KKToppharm Account denotes the current account of the pharmacy, containing consolidated receivables and liabilities against other entities in the network. |
 ## Struct Table
