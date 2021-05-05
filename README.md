@@ -294,7 +294,7 @@ The calcPoint function is called by [addTransaction](#addTransaction) to calcula
 ``` 
 ### calcPointValue
 
-The calcPointValue function is called by [addTransaction](#addTransaction) to calculate the corresponding point value that a pharmacy needs to book in its point accrual account. This function also calls [queryPromotionMultiple](#queryPromotionMultiple) and [queryPromotionPointValue](#queryPromotionPointValue) and uses the respective multiple to calculate the point value embedded in the transaction which equals 1/Promotion_Multiple.
+The calcPointValue function is called by [addTransaction](#addTransaction) to calculate the corresponding point value that a pharmacy needs to book in its point accrual account. This function also calls [queryPromotionMultiple](#queryPromotionMultiple) and [queryPromotionPointValue](#queryPromotionPointValue) and uses the respective multiple to calculate the point value embedded in the transaction which equals 0.01 CHF/Promotion_Multiple per point.
 ```solidity
     function calcPointValue(product memory _product) internal returns(uint _pointValue){
         uint _point = 0;
