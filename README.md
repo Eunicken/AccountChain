@@ -104,7 +104,7 @@ addTransaction further calls the [calcPoint](#calcPoint) and [calcPointValue](#c
 ```
 ### addPointRecord
 
-Let's have a look on how loyalty points are processed in Chaincode. The addPointRecord function is triggered by [addTransaction](#addTransaction) to record points in PointRecordList. Each point has attributes such as the client ID, pharmacy ID, point value, point issue timestamp, tax category of the respective purchased products and a status. 
+Let's have a look on how loyalty points are processed in Chaincode. The addPointRecord function is triggered by [addTransaction](#addTransaction) to record points in PointRecordList. Each point has attributes such as the client ID, pharmacy ID, point value, point issueance timestamp, tax category of the respective purchased products and a status. 
 ```solidity
    struct pointRecord {
         uint pharmacyID;
@@ -121,7 +121,7 @@ Let's have a look on how loyalty points are processed in Chaincode. The addPoint
 ```solidity
    pointRecord[] pointRecordList;
 ```
-A point can exhibit three different states – “Active”; “Converted into voucher” and “Expired”, whereby the status is set to “Active” at issuance.  After the points have been recorded, the addPointRecord function triggers the [bookAccrualAccount](#bookAccrualAccount) function to book the total value of points issued in the pharmacy’s point accrual account. This accrued balance denotes a sell discount, which is VAT-deductible. 
+A point can exhibit three different states – “Active”; “Converted into voucher” and “Expired”, whereby the status is set to “Active” at issuance.  After the points have been recorded, the addPointRecord function triggers the [bookAccrualAccount](#bookAccrualAccount) function to book the total value of points issued in the pharmacy’s point accrual account. This accrued balance denotes a sell discount which is VAT-deductible. 
 ```solidity
    function addPointRecord(uint _clientID, uint _pharmacyID, uint _point, uint _pointValue,  product memory  _product) internal {
             pointRecordList[pointRecordList.length].clientID = _clientID;
@@ -282,7 +282,7 @@ The functions described in this section play a supporting role in the Smart Cont
 
 ### calcPoint
 
-The calcPoint function is called by [addTransaction](#addTransaction) to calculate the total points that a client can obtain for one purchase. Additionally, this function calls [queryPromotionMultiple](#queryPromotionMultiple) to see whether there is an active multi-point promotion. If the case, it takes the respective multiple into account when calculating the effective point transaction amount. 
+The calcPoint function is called by [addTransaction](#addTransaction) to calculate the total points that a client can obtain for the purchase. Additionally, this function calls [queryPromotionMultiple](#queryPromotionMultiple) to see whether there is an active multi-point promotion. If the case, it takes the respective multiple into account when calculating the effective point transaction amount. 
 ```solidity
    function calcPoint(product memory _product) internal returns(uint _point){
         uint _point = 0;
@@ -294,7 +294,7 @@ The calcPoint function is called by [addTransaction](#addTransaction) to calcula
 ``` 
 ### calcPointValue
 
-The calcPointValue function is called by [addTransaction](#addTransaction) to calculate the corresponding point value that a pharmacy needs to book in its point accrual account. This function also calls [queryPromotionMultiple](#queryPromotionMultiple) and [queryPromotionPointValue](#queryPromotionPointValue) and uses the respective multiple to calculate the pint value embedded in the transaction which equals 1/Promotion_Multiple.
+The calcPointValue function is called by [addTransaction](#addTransaction) to calculate the corresponding point value that a pharmacy needs to book in its point accrual account. This function also calls [queryPromotionMultiple](#queryPromotionMultiple) and [queryPromotionPointValue](#queryPromotionPointValue) and uses the respective multiple to calculate the point value embedded in the transaction which equals 1/Promotion_Multiple.
 ```solidity
     function calcPointValue(product memory _product) internal returns(uint _pointValue){
         uint _point = 0;
@@ -308,7 +308,7 @@ The calcPointValue function is called by [addTransaction](#addTransaction) to ca
 ```
 ### sortPointRecord
 
-The sortPointRecord sorts the pointRecord with its timestamp in a acending order. The algorithm applied is insert sorting.
+The sortPointRecord sorts the pointRecord with its timestamp in a acending order. The algorithm applied here is insert sorting.
 ```solidity
    function sortPointRecord() internal {
         uint _timestamp = pointRecordList[pointRecordList.length-1].issueTime;
@@ -392,7 +392,7 @@ This function changes the point accrual account of a pharmacy. The point accrual
 
 ### addPromotion
 
-This function is used to add a multi-point promotion into the system. A promotion must contain the respective product ID, for which the promotion is applied for, the corresponding multiple and point value, and the beginning time and ending time of the promotion.
+This function is used to add multi-point promotions to the system. A promotion must contain the respective product ID, for which the promotion is applied for, the corresponding multiple and point value, and the planned start and end timestamp of the promotion.
 ```solidity
     struct promotion {
         uint productID;
@@ -443,7 +443,7 @@ This function is called by [calcPointValue](#calcPointValue) functions to calcul
     }
 ```
 ### updatePromotion
-The updatePromotion function updates the promotion information to its latest state. To avoid too frequent updates for higher efficiency and lower system running costs, the default setting is one update per hour. In practise, this setting fulfills the requirements because a promotion in the system starts at the beginning of a day at 00:00:00 and ends at 23:59:59 on the same day or on another day. Overnight (11 pm. to 1 am. on the following day), pharmacies are closed and clients cannot make purchasse during this period. Therefore, it is guaranteed that the points calculated are combined with the up-to-date promotion. The default setting of the promotion update time interval can be changed through [setPromotionListUpdateTimeinterval](#setPromotionListUpdateTimeinterval) function. 
+The updatePromotion function updates the promotion information to its latest state. To avoid too frequent updates for higher efficiency and lower system running costs, the default setting is one update per hour. In practise, this setting fulfills the requirements because a promotion in the system starts at the beginning of a day at 00:00:00 and ends at 23:59:59 on the same day or on another day. Overnight (11 pm. to 1 am. on the following day), pharmacies are closed and clients cannot make purchases during this period. Therefore, it is guaranteed that the points calculated are combined with any activated promotion. The default setting of the promotion update time interval can be changed by the [setPromotionListUpdateTimeinterval](#setPromotionListUpdateTimeinterval) function. 
 ```solidity
    function updatePromotion() internal {
         if (block.timestamp - lastUpdatePromotion > timeIntervalPromotion) { // used to avoid too frequent update to promotionList to improve the efficiency
@@ -495,7 +495,7 @@ compareStrings function is used to compare strings in Solidity, i.e. whether the
 ## Account Table
 |Account|Description|
 |:---:|:---|
-|accrualAccount| The point accrual Account denotes the sum of issued points multiplied by their point value.|
+|accrualAccount| The point accrual Account denotes the sum of issued points multiplied by their respective point value.|
 |KKToppharmAccount | KKToppharm Account denotes the current account of the pharmacy, containing consolidated receivables and liabilities against other entities in the network. |
 ## Struct Table
 |Struct|Attributes|
