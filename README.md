@@ -191,7 +191,7 @@ Once the amount of points used to issue the respective voucher is deducted from 
             if (compareStrings(pointRecordList[i].status,"Active") && pointRecordList[i].clientID == _clientID) {
                 // First Case: one point record has less than _point amount of points needed to complete voucher issuance.
                 // Further point record must be combined to issue the voucher
-                // The _point required to issure a voucher is deducted and if it is still positive after deduction, it will be used for next loop 
+                // The _point required to issue a voucher is deducted and if it is still positive after deduction, it will be used for next loop 
                 if (pointRecordList[i].point < _point){
                     pointRecordList[i].status = "Coverted into voucher";
                     pointRecordList[i].hashVoucherCode = _hashVoucherCode;
