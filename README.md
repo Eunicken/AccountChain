@@ -277,7 +277,27 @@ Like it is the case with points, also vouchers can expire. The expireVoucher fun
 ``` 
 ### redeemVoucher
 
-
+Customers receive vouchers in the form of a QR code which consists of the Client ID, the clean voucher code, and the salt which has been appended to the latter before it has been hashed. (Note: The hashing process takes place in an off-chain environment to avoid that not the clean but hashed voucher codes are stored on-chain.) The redeemVoucher function verifies the voucher validity and adjusts the current account KKToppharm after a voucher has been redeemed. During the redemption process, the voucher clean code and the salt are received by redeemVoucher function as input to re-calculate the hash voucher code. Subsequently, the calculated hash voucher code is compared with the hash voucher codes stored in VoucherList. If the hash voucher code is valid and the corresponding voucher has a status equal to “Active”, the voucher is valid and it thus can be redeemed. After redeeming the voucher, the pharmacy who receives the voucher, books the voucher value as receivable into its current account KKToppharm.
+```solidity
+    function redeemVoucher(uint _clientID, uint _VoucherCode, uint _pharmacyID, uint _Salt) public returns (bool validVoucher) {
+        validVoucher = false; // _pharmacyID here is the pharmacy, where the client redeemed her voucher.
+        expireVoucher();
+        bytes32 _hashVoucherCode = keccak256(abi.encodePacked(_VoucherCode,_Salt));
+        for (uint i=0; i<voucherList.length; i++) {
+            if(voucherList[i].hashVoucherCode == _hashVoucherCode && voucherList[i].clientID == _clientID) {
+                validVoucher = true;
+                uint _voucherValue = voucherList[i].voucherValue;
+                    changeVoucherStatus(voucherList[i].hashVoucherCode, "Used");
+                for (uint k=0; k<pharmacyList.length; k++) {
+                    if (pharmacyList[k].pharmacyID == _pharmacyID) {
+                    bookKKToppharm(_pharmacyID, -int(_voucherValue), 0);
+                    break;
+                    }
+                }
+            }
+        }
+    }
+``` 
 ## Other Functions
 
 The other functions play a supporting role in the Smart Contract to realize the *AccountChain©* functions. 
