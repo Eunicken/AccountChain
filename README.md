@@ -506,7 +506,7 @@ compareStrings function is used to compare the strings in solidity, whether they
 |KKToppharmAccount | KKToppharm Account denotes the current account of the pharmacy, containing consolidated receivables and liabilities against other entities in the network. |
 ## Struct Table
 |Struct|Attributes|
-|:---:|:---:|
+|:---:|:---|
 |client| address clientAddress <br /> uint clientID <br /> uint point <br /> uint lastPurchaseTime <br /> string status  <br /> mapping (bytes32 => voucher) voucherListClient| 
 |pharmacy | uint pharmacyID <br /> accrualAccount accrualPoint <br /> KKToppharmAccount accountKKToppharm | 
 |pointRecord | uint pharmacyID <br /> uint clientID <br /> uint point <br /> uint pointValue <br /> uint issueTime  <br /> uint statusChangeTime <br /> uint taxCategory <br /> bytes32 hashVoucherCode <br /> string status| 
