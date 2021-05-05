@@ -502,11 +502,7 @@ compareStrings function is used to compare the strings in solidity, whether they
 ## Account Table
 |Account|Description|Attributes|
 |:---:|:---:|:---:|
-|Point Accrual Account| The point accrual Account denotes the issued points as a sell discount, which is VAT-deductible.|      int total <br />
-        int taxCat1 // 8% MWST <br />
-        int taxCat2 // 7.7% MWST <br />
-        int taxCat3 // 2.5% MWST <br />
-        int taxCat4 // 0% MWST | 
+|Point Accrual Account| The point accrual Account denotes the issued points as a sell discount, which is VAT-deductible.| int total <br /> int taxCat1 // 8% MWST <br /> int taxCat2 // 7.7% MWST <br /> int taxCat3 // 2.5% MWST <br /> int taxCat4 // 0% MWST | 
 |KKToppharm | KKToppharm Account denotes the current account of the pharmacy, containing consolidated receivables and liabilities against other entities in the network. | |
 
 ## Struct Table
