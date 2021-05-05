@@ -500,16 +500,20 @@ compareStrings function is used to compare the strings in solidity, whether they
 
 # Table
 ## Account Table
-|Account|Description|
-|:---:|:---:|
-|Point Accrual Account| The point accrual Account denotes the issued points as a sell discount, which is VAT-deductible.| 
-|KKToppharm | KKToppharm Account denotes the current account of the pharmacy, containing consolidated receivables and liabilities against other entities in the network. | 
+|Account|Description|Attributes|
+|:---:|:---:|:---:|
+|Point Accrual Account| The point accrual Account denotes the issued points as a sell discount, which is VAT-deductible.|      int total <br />
+        int taxCat1 // 8% MWST <br />
+        int taxCat2 // 7.7% MWST <br />
+        int taxCat3 // 2.5% MWST <br />
+        int taxCat4 // 0% MWST | 
+|KKToppharm | KKToppharm Account denotes the current account of the pharmacy, containing consolidated receivables and liabilities against other entities in the network. | |
 
 ## Struct Table
 |Struct|Attributes|
 |:---:|:---:|
-|client| address clientAddress <br /> uint clientID| 
-|KKToppharm | KKToppharm Account denotes the current account of the pharmacy, containing consolidated receivables and liabilities against other entities in the network. | 
+|client| address clientAddress <br /> uint clientID <br /> uint point <br /> uint lastPurchaseTime <br /> string status  <br /> mapping (bytes32 => voucher) voucherListClient| 
+|pharmacy | uint pharmacyID <br /> accrualAccount accrualPoint <br /> KKToppharmAccount accountKKToppharm | 
 ## Table Align
 
 ## Align Center
