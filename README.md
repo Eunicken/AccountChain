@@ -508,7 +508,7 @@ compareStrings function is used to compare the strings in solidity, whether they
 ## Struct Table
 |Struct|Attributes|
 |:---:|:---:|
-|client| address clientAddress\ uint clientID| 
+|client| address clientAddress <br /> uint clientID| 
 |KKToppharm | KKToppharm Account denotes the current account of the pharmacy, containing consolidated receivables and liabilities against other entities in the network. | 
 ## Table Align
 
