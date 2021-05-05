@@ -31,13 +31,8 @@ Welcome to AccountChain
 	- [compareStrings](#compareStrings)
 - [Table](#table)
 	- [Account Table](#Account-Table)
-    	- [Align Center](#align-center)
-    	- [Align Left](#align-left)
-    	- [Align Right](#align-right)
-- [Escape Characters](#escape-characters)
-- [Emoji](#emoji)
-- [Shields Badges](#Shields-Badges)
-- [Markdown Editor](#markdown-editor)
+	- [Struct Table](#Struct-Table)
+	- [List Table](#List-Table)
 - [Links for User Interfaces](#Links-for-User-Interfaces)
 
 
@@ -510,11 +505,11 @@ compareStrings function is used to compare the strings in solidity, whether they
 |Point Accrual Account| The point accrual Account denotes the issued points as a sell discount, which is VAT-deductible.| 
 |KKToppharm | KKToppharm Account denotes the current account of the pharmacy, containing consolidated receivables and liabilities against other entities in the network. | 
 
->\|Column 1|Column 2|Column 3|<br>
->\|---|---|---|<br>
->\|Row 1 Column1| Row 1 Column 2| Row 1 Column 3|<br>
->\|Row 2 Column1| Row 2 Column 2| Row 2 Column 3|<br>
-
+## Struct Table
+|Struct|Attributes|
+|:---:|:---:|
+|client| address clientAddress\ uint clientID| 
+|KKToppharm | KKToppharm Account denotes the current account of the pharmacy, containing consolidated receivables and liabilities against other entities in the network. | 
 ## Table Align
 
 ## Align Center
@@ -541,56 +536,6 @@ compareStrings function is used to compare the strings in solidity, whether they
 >\|Row 1 Column1| Row 1 Column 2| Row 1 Column 3|<br>
 >\|Row 2 Column1| Row 2 Column 2| Row 2 Column 3|<br>
 
-## Align Right
-
-|Column 1|Column 2|Column 3|
-|---:|---:|---:|
-|Row 1 Column1| Row 1 Column 2| Row 1 Column 3|
-|Row 2 Column1| Row 2 Column 2| Row 2 Column 3|
-
->\|Column 1|Column 2|Column 3|<br>
->\|---:|---:|---:|<br>
->\|Row 1 Column1| Row 1 Column 2| Row 1 Column 3|<br>
->\|Row 2 Column1| Row 2 Column 2| Row 2 Column 3|<br>
-
-See more [Markdown Extras - Table](https://github.com/fefong/markdown_readme/blob/master/markdown-extras.md#table)
-* [Rownspan](https://github.com/fefong/markdown_readme/blob/master/markdown-extras.md#table---rowspan)
-* [Colspan](https://github.com/fefong/markdown_readme/blob/master/markdown-extras.md#table---colspan)
-
-# Escape Characters
-
-```
-\   backslash
-`   backtick
-*   asterisk
-_   underscore
-{}  curly braces
-[]  square brackets
-()  parentheses
-#   hash mark
-+   plus sign
--   minus sign (hyphen)
-.   dot
-!   exclamation mark
-```
-
-# Emoji
-
-
-	
-
-# Shields Badges
-
-:warning: _We are not responsible for this site_
-
-See more: [https://shields.io/](https://shields.io/)
-
-[![AccountChain App](https://img.shields.io/github/forks/fefong/markdown_readme)](https://github.com/fefong/markdown_readme/network)
-![Markdown](https://img.shields.io/badge/markdown-project-red)
-
-# Markdown Editor
-
-[StackEdit](https://stackedit.io) - _StackEdit’s Markdown syntax highlighting is unique. The refined text formatting of the editor helps you visualize the final rendering of your files._
 
 # Links for User Interfaces
 
