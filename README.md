@@ -112,7 +112,7 @@ Let's have a look on how loyalty points are processed in Chaincode. The addPoint
         uint point;
         uint pointValue;
         uint issueTime;
-        uint statusChangeTime; //document the lastes status change time to enable query within a certain period.
+        uint statusChangeTime; //document the latest status change time to enable query within a certain period.
         uint taxCategory;
         bytes32 hashVoucherCode; // After changing the point into voucher, the hash voucher code is stored here.
         string status; // a point has three status "Active", "Converted to voucher", "Expired"
